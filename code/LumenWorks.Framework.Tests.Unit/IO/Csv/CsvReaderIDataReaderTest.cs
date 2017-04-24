@@ -20,12 +20,10 @@
 //	ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
-using System.Collections;
 using System.Data;
 using System.Globalization;
 using System.IO;
-using System.Text;
-
+using FluentAssertions;
 using NUnit.Framework;
 
 using LumenWorks.Framework.IO.Csv;
@@ -62,6 +60,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
 
 				DataTable schema = reader.GetSchemaTable();
 
+			    // ReSharper disable once PossibleNullReferenceException
 				Assert.AreEqual(CsvReaderSampleData.SampleData1RecordCount, schema.Rows.Count);
 
 				foreach (DataColumn column in schema.Columns)
@@ -137,6 +136,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
 
 				DataTable schema = reader.GetSchemaTable();
 
+			    // ReSharper disable once PossibleNullReferenceException
 				Assert.AreEqual(CsvReaderSampleData.SampleData1RecordCount, schema.Rows.Count);
 
 				foreach (DataColumn column in schema.Columns)
@@ -177,7 +177,6 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
 		}
 
 		[Test()]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public void GetSchemaTableReaderClosedTest()
 		{
 			using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), true))
@@ -186,7 +185,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
 				csv.ReadNextRecord();
 				reader.Close();
 
-				DataTable result = reader.GetSchemaTable();
+				reader.Invoking(x => x.GetSchemaTable()).ShouldThrow<InvalidOperationException>();
 			}
 		}
 
@@ -204,7 +203,6 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
 		}
 
 		[Test()]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public void NextResultReaderClosedTest()
 		{
 			using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), true))
@@ -213,7 +211,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
 				csv.ReadNextRecord();
 				reader.Close();
 
-				bool result = reader.NextResult();
+				reader.Invoking(x => x.NextResult()).ShouldThrow<InvalidOperationException>();
 			}
 		}
 
@@ -232,7 +230,6 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
 		}
 
 		[Test()]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public void ReadReaderClosedTest()
 		{
 			using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), true))
@@ -241,7 +238,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
 				csv.ReadNextRecord();
 				reader.Close();
 
-				bool result = reader.Read();
+				reader.Invoking(x => x.Read()).ShouldThrow<InvalidOperationException>();
 			}
 		}
 
@@ -259,7 +256,6 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
 		}
 
 		[Test()]
-		[ExpectedException(typeof(InvalidOperationException))]
 		public void DepthReaderClosedTest()
 		{
 			using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), true))
@@ -268,7 +264,8 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
 				csv.ReadNextRecord();
 				reader.Close();
 
-				int result = reader.Depth;
+			    // ReSharper disable once UnusedVariable
+				reader.Invoking(x => { var depth = x.Depth; }).ShouldThrow<InvalidOperationException>();
 			}
 		}
 

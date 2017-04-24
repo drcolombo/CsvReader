@@ -24,11 +24,10 @@
 
 
 using System;
-using System.Collections;
-using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using FluentAssertions;
 using NUnit.Framework;
 
 using LumenWorks.Framework.IO.Csv;
@@ -43,29 +42,50 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         #region Constructors
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void ArgumentTestCtor1()
         {
-            using (CsvReader csv = new CsvReader(null, false))
+            try
             {
+                using (new CsvReader(null, false))
+                {
+                }
+                Assert.Fail();
+            }
+            catch (ArgumentNullException)
+            {
+                Assert.Pass();
             }
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ArgumentTestCtor2()
         {
-            using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), false, 0))
+            try
             {
+                using (new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), false, 0))
+                {
+                }
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                Assert.Pass();
             }
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ArgumentTestCtor3()
         {
-            using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), false, -1))
+            try
             {
+                using (new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), false, -1))
+                {
+                }
+                Assert.Fail();
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                Assert.Pass();
             }
         }
 
@@ -83,102 +103,102 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         #region Indexers
 
         [Test]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ArgumentTestIndexer1()
         {
             using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), false))
             {
-                string s = csv[-1];
+                // ReSharper disable once UnusedVariable
+                csv.Invoking(x => { var s = x[-1]; }).ShouldThrow<ArgumentOutOfRangeException>();
             }
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ArgumentTestIndexer2()
         {
             using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), false))
             {
-                string s = csv[CsvReaderSampleData.SampleData1RecordCount];
+                // ReSharper disable once UnusedVariable
+                csv.Invoking(x => { var s = x[CsvReaderSampleData.SampleData1RecordCount]; }).ShouldThrow<ArgumentOutOfRangeException>();
             }
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void ArgumentTestIndexer3()
         {
             using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), false))
             {
-                string s = csv["asdf"];
+                // ReSharper disable once UnusedVariable
+                csv.Invoking(x => { var s = x["asdf"]; }).ShouldThrow<InvalidOperationException>();
             }
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void ArgumentTestIndexer4()
         {
             using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), false))
             {
-                string s = csv[CsvReaderSampleData.SampleData1Header0];
+                // ReSharper disable once UnusedVariable
+                csv.Invoking(x => { var s = x[CsvReaderSampleData.SampleData1Header0]; }).ShouldThrow<InvalidOperationException>();
             }
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void ArgumentTestIndexer5()
         {
             using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), false))
             {
-                string s = csv[null];
+                // ReSharper disable once UnusedVariable
+                csv.Invoking(x => { var s = x[null]; }).ShouldThrow<ArgumentNullException>();
             }
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void ArgumentTestIndexer6()
         {
             using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), false))
             {
-                string s = csv[string.Empty];
+                // ReSharper disable once UnusedVariable
+                csv.Invoking(x => { var s = x[string.Empty]; }).ShouldThrow<ArgumentNullException>();
             }
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void ArgumentTestIndexer7()
         {
             using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), true))
             {
-                string s = csv[null];
+                // ReSharper disable once UnusedVariable
+                csv.Invoking(x => { var s = x[null]; }).ShouldThrow<ArgumentNullException>();
             }
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void ArgumentTestIndexer8()
         {
             using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), true))
             {
-                string s = csv[string.Empty];
+                // ReSharper disable once UnusedVariable
+                csv.Invoking(x => { var s = x[string.Empty]; }).ShouldThrow<ArgumentNullException>();
             }
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void ArgumentTestIndexer9()
         {
             using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), true))
             {
-                string s = csv["asdf"];
+                // ReSharper disable once UnusedVariable
+                csv.Invoking(x => { var s = x["asdf"]; }).ShouldThrow<ArgumentException>();
             }
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ArgumentTestIndexer10()
         {
             using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), false))
             {
-                string s = csv[-1, 0];
+                // ReSharper disable once UnusedVariable
+                csv.Invoking(x => { var s = x[-1, 0]; }).ShouldThrow<ArgumentOutOfRangeException>();
             }
         }
 
@@ -187,54 +207,49 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         #region CopyCurrentRecordTo
 
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void ArgumentTestCopyCurrentRecordTo1()
         {
             using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), false))
             {
-                csv.CopyCurrentRecordTo(null);
+                csv.Invoking(x => x.CopyCurrentRecordTo(null)).ShouldThrow<ArgumentNullException>();
             }
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ArgumentTestCopyCurrentRecordTo2()
         {
             using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), false))
             {
-                csv.CopyCurrentRecordTo(new string[1], -1);
+                csv.Invoking(x => x.CopyCurrentRecordTo(new string[1], -1)).ShouldThrow<ArgumentOutOfRangeException>();
             }
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ArgumentTestCopyCurrentRecordTo3()
         {
             using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), false))
             {
-                csv.CopyCurrentRecordTo(new string[1], 1);
+                csv.Invoking(x => x.CopyCurrentRecordTo(new string[1], 1)).ShouldThrow<ArgumentOutOfRangeException>();
             }
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void ArgumentTestCopyCurrentRecordTo4()
         {
             using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), false))
             {
                 csv.ReadNextRecord();
-                csv.CopyCurrentRecordTo(new string[CsvReaderSampleData.SampleData1RecordCount - 1], 0);
+                csv.Invoking(x => x.CopyCurrentRecordTo(new string[CsvReaderSampleData.SampleData1RecordCount - 1], 0)).ShouldThrow<ArgumentException>();
             }
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
         public void ArgumentTestCopyCurrentRecordTo5()
         {
             using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), false))
             {
                 csv.ReadNextRecord();
-                csv.CopyCurrentRecordTo(new string[CsvReaderSampleData.SampleData1RecordCount], 1);
+                csv.Invoking(x => x.CopyCurrentRecordTo(new string[CsvReaderSampleData.SampleData1RecordCount], 1)).ShouldThrow<ArgumentException>();
             }
         }
 
@@ -349,7 +364,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
                 Checkdata5(random.Next(1, 512));
         }
 
-        public void Checkdata5(int bufferSize)
+        private void Checkdata5(int bufferSize)
         {
             const string data = CsvReaderSampleData.SampleData1;
 
@@ -369,7 +384,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         [Test]
         public void ParsingTest6()
         {
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader("1,2"), false))
+            using (CsvReader csv = new CsvReader(new StringReader("1,2"), false))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual("1", csv[0]);
@@ -384,7 +399,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         [Test]
         public void ParsingTest7()
         {
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader("\r\n1\r\n"), false))
+            using (CsvReader csv = new CsvReader(new StringReader("\r\n1\r\n"), false))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual(',', csv.Delimiter);
@@ -400,7 +415,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             const string data = "\"bob said, \"\"Hey!\"\"\",2, 3 ";
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), false, ',', '\"', '\"', '#', ValueTrimmingOptions.UnquotedOnly))
+            using (CsvReader csv = new CsvReader(new StringReader(data), false, ',', '\"', '\"', '#', ValueTrimmingOptions.UnquotedOnly))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual("bob said, \"Hey!\"", csv[0]);
@@ -418,7 +433,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             const string data = ",";
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), false))
+            using (CsvReader csv = new CsvReader(new StringReader(data), false))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual(String.Empty, csv[0]);
@@ -435,7 +450,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             const string data = "1\r2";
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), false))
+            using (CsvReader csv = new CsvReader(new StringReader(data), false))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual("1", csv[0]);
@@ -454,7 +469,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             const string data = "1\n2";
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), false))
+            using (CsvReader csv = new CsvReader(new StringReader(data), false))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual("1", csv[0]);
@@ -473,7 +488,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             const string data = "1\r\n2";
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), false))
+            using (CsvReader csv = new CsvReader(new StringReader(data), false))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual("1", csv[0]);
@@ -492,7 +507,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             const string data = "1\r";
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), false))
+            using (CsvReader csv = new CsvReader(new StringReader(data), false))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual("1", csv[0]);
@@ -507,7 +522,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             const string data = "1\n";
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), false))
+            using (CsvReader csv = new CsvReader(new StringReader(data), false))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual("1", csv[0]);
@@ -522,7 +537,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             const string data = "1\r\n";
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), false))
+            using (CsvReader csv = new CsvReader(new StringReader(data), false))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual("1", csv[0]);
@@ -537,7 +552,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             const string data = "1\r2\n";
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), false, '\r', '"', '\"', '#', ValueTrimmingOptions.UnquotedOnly))
+            using (CsvReader csv = new CsvReader(new StringReader(data), false, '\r', '"', '\"', '#', ValueTrimmingOptions.UnquotedOnly))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual("1", csv[0]);
@@ -553,7 +568,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             const string data = "\"July 4th, 2005\"";
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), false))
+            using (CsvReader csv = new CsvReader(new StringReader(data), false))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual("July 4th, 2005", csv[0]);
@@ -568,7 +583,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             const string data = " 1";
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), false, ',', '\"', '\"', '#', ValueTrimmingOptions.None))
+            using (CsvReader csv = new CsvReader(new StringReader(data), false, ',', '\"', '\"', '#', ValueTrimmingOptions.None))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual(" 1", csv[0]);
@@ -583,7 +598,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             string data = String.Empty;
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), false))
+            using (CsvReader csv = new CsvReader(new StringReader(data), false))
             {
                 Assert.IsFalse(csv.ReadNextRecord());
             }
@@ -594,7 +609,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             const string data = "user_id,name\r\n1,Bruce";
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), true))
+            using (CsvReader csv = new CsvReader(new StringReader(data), true))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual("1", csv[0]);
@@ -613,7 +628,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             const string data = "\"data \r\n here\"";
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), false, ',', '\"', '\"', '#', ValueTrimmingOptions.None))
+            using (CsvReader csv = new CsvReader(new StringReader(data), false, ',', '\"', '\"', '#', ValueTrimmingOptions.None))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual("data \r\n here", csv[0]);
@@ -628,7 +643,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             const string data = "\r\r\n1\r";
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), false, '\r', '\"', '\"', '#', ValueTrimmingOptions.None))
+            using (CsvReader csv = new CsvReader(new StringReader(data), false, '\r', '\"', '\"', '#', ValueTrimmingOptions.None))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual(3, csv.FieldCount);
@@ -650,7 +665,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             const string data = "\"double\"\"\"\"double quotes\"";
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), false, ',', '\"', '\"', '#', ValueTrimmingOptions.None))
+            using (CsvReader csv = new CsvReader(new StringReader(data), false, ',', '\"', '\"', '#', ValueTrimmingOptions.None))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual("double\"\"double quotes", csv[0]);
@@ -665,7 +680,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             const string data = "1\r";
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), false))
+            using (CsvReader csv = new CsvReader(new StringReader(data), false))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual("1", csv[0]);
@@ -680,7 +695,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             const string data = "1\r\n";
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), false))
+            using (CsvReader csv = new CsvReader(new StringReader(data), false))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual("1", csv[0]);
@@ -695,7 +710,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             const string data = "1\n";
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), false))
+            using (CsvReader csv = new CsvReader(new StringReader(data), false))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual("1", csv[0]);
@@ -710,7 +725,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             const string data = "'bob said, ''Hey!''',2, 3 ";
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), false, ',', '\'', '\'', '#', ValueTrimmingOptions.UnquotedOnly))
+            using (CsvReader csv = new CsvReader(new StringReader(data), false, ',', '\'', '\'', '#', ValueTrimmingOptions.UnquotedOnly))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual("bob said, 'Hey!'", csv[0]);
@@ -728,7 +743,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             const string data = "\"data \"\" here\"";
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), false, ',', '\0', '\\', '#', ValueTrimmingOptions.None))
+            using (CsvReader csv = new CsvReader(new StringReader(data), false, ',', '\0', '\\', '#', ValueTrimmingOptions.None))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual("\"data \"\" here\"", csv[0]);
@@ -743,7 +758,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             string data = new String('a', 75) + "," + new String('b', 75);
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), false))
+            using (CsvReader csv = new CsvReader(new StringReader(data), false))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual(new String('a', 75), csv[0]);
@@ -759,7 +774,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             const string data = "1\r\n\r\n1";
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), false))
+            using (CsvReader csv = new CsvReader(new StringReader(data), false))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual("1", csv[0]);
@@ -778,7 +793,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             const string data = "1\r\n# bunch of crazy stuff here\r\n1";
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), false, ',', '\"', '\"', '#', ValueTrimmingOptions.None))
+            using (CsvReader csv = new CsvReader(new StringReader(data), false, ',', '\"', '\"', '#', ValueTrimmingOptions.None))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual("1", csv[0]);
@@ -797,7 +812,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             const string data = "\"1\",Bruce\r\n\"2\n\",Toni\r\n\"3\",Brian\r\n";
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), false, ',', '\"', '\"', '#', ValueTrimmingOptions.None))
+            using (CsvReader csv = new CsvReader(new StringReader(data), false, ',', '\"', '\"', '#', ValueTrimmingOptions.None))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual("1", csv[0]);
@@ -823,7 +838,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             const string data = "\"double\\\\\\\\double backslash\"";
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), false, ',', '\"', '\\', '#', ValueTrimmingOptions.None))
+            using (CsvReader csv = new CsvReader(new StringReader(data), false, ',', '\"', '\\', '#', ValueTrimmingOptions.None))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual("double\\\\double backslash", csv[0]);
@@ -839,7 +854,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
             const string data = "\"Chicane\", \"Love on the Run\", \"Knight Rider\", \"This field contains a comma, but it doesn't matter as the field is quoted\"\r\n" +
                       "\"Samuel Barber\", \"Adagio for Strings\", \"Classical\", \"This field contains a double quote character, \"\", but it doesn't matter as it is escaped\"";
 
-            using (CsvReader csv = new CsvReader(new System.IO.StringReader(data), false, ',', '\"', '\"', '#', ValueTrimmingOptions.UnquotedOnly))
+            using (CsvReader csv = new CsvReader(new StringReader(data), false, ',', '\"', '\"', '#', ValueTrimmingOptions.UnquotedOnly))
             {
                 Assert.IsTrue(csv.ReadNextRecord());
                 Assert.AreEqual("Chicane", csv[0]);
@@ -997,7 +1012,6 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
             }
         }
 
-        [ExpectedException(typeof(MalformedCsvException))]
         [Test]
         public void ParsingTest44()
         {
@@ -1006,7 +1020,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
             using (var csv = new CsvReader(new StringReader(data), false))
             {
                 csv.MaxQuotedFieldLength = 10;
-                csv.ReadNextRecord();
+                csv.Invoking(x => x.ReadNextRecord()).ShouldThrow<MalformedCsvException>();
             }
         }
 
@@ -1185,7 +1199,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
                 Assert.AreEqual(csv.FieldCount, headers.Length);
 
                 Assert.AreEqual("aaa", headers[3]);
-                foreach (var index in new int[] { 0, 1, 2, 4, 5, 6, 7 })
+                foreach (var index in new[] { 0, 1, 2, 4, 5, 6, 7 })
                     Assert.AreEqual(defaultHeaderName + index.ToString(), headers[index]);
             }
         }
@@ -1197,8 +1211,7 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         {
             var csv = new CachedCsvReader(new StringReader("12345678;Hello\r\n78945612;World"), false, ';');
 
-            var dgv = new DataGridView();
-            dgv.DataSource = csv;
+            var dgv = new DataGridView { DataSource = csv };
 
             dgv.Refresh();
         }
@@ -1208,13 +1221,11 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         [Test]
         public void HasHeader_NullHeader()
         {
-            string header = null;
-
             using (CsvReader csvReader = new CsvReader(new StringReader("Header1,Header2\r\nValue1,Value2"), true))
             {
                 Assert.Throws<ArgumentNullException>(delegate
                 {
-                    csvReader.HasHeader(header);
+                    csvReader.HasHeader(null);
                 });
             }
         }
@@ -1257,12 +1268,11 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         #region CopyCurrentRecordTo
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void CopyCurrentRecordToTest1()
         {
             using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), false))
             {
-                csv.CopyCurrentRecordTo(new string[CsvReaderSampleData.SampleData1RecordCount]);
+                csv.Invoking(x => x.CopyCurrentRecordTo(new string[CsvReaderSampleData.SampleData1RecordCount])).ShouldThrow<InvalidOperationException>();
             }
         }
 
@@ -1381,23 +1391,30 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void IndexerTest2()
         {
             using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), true))
             {
-                string s = csv[1, 0];
-                s = csv[0, 0];
+                try
+                {
+                    string s = csv[1, 0];
+                    s = csv[0, 0];
+                }
+                catch (InvalidOperationException)
+                {
+                    Assert.Pass();
+                }
             }
+            Assert.Fail();
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void IndexerTest3()
         {
             using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), true))
             {
-                string s = csv[CsvReaderSampleData.SampleData1RecordCount, 0];
+                // ReSharper disable once UnusedVariable
+                csv.Invoking(x => { var s = csv[CsvReaderSampleData.SampleData1RecordCount, 0]; }).ShouldThrow<InvalidOperationException>();
             }
         }
 

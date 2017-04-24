@@ -27,7 +27,7 @@ using System.Data.Common;
 using Debug = System.Diagnostics.Debug;
 using System.Globalization;
 using System.IO;
-
+using System.Linq;
 using LumenWorks.Framework.IO.Csv.Resources;
 
 namespace LumenWorks.Framework.IO.Csv
@@ -141,6 +141,11 @@ namespace LumenWorks.Framework.IO.Csv
         /// Contains the dictionary of field indexes by header. The key is the field name and the value is its index.
         /// </summary>
         private Dictionary<string, int> _fieldHeaderIndexes;
+
+        /// <summary>
+        /// Contains a list of 'virtual' columns. They are additional columns that can be evaluated in run-time
+        /// </summary>
+        public List<Column> VirtualColumns = new List<Column>();
 
         /// <summary>
         /// Contains the current record index in the CSV file.
@@ -1126,7 +1131,7 @@ namespace LumenWorks.Framework.IO.Csv
                 if (_currentRecordIndex < 0)
                     throw new InvalidOperationException(ExceptionMessage.NoCurrentRecord);
 
-                if (field >= _fieldCount)
+                if (field >= _fieldCount || VirtualColumns.Contains(Columns[field]) && Columns[field].DefaultValue != null)
                 {
                     // Use the column default as UseColumnDefaults is true at this point
                     return Columns[field].DefaultValue;
@@ -1551,6 +1556,20 @@ namespace LumenWorks.Framework.IO.Csv
                             Array.Resize(ref _fields, (_fieldCount + 1) * 2);
                     }
                 }
+                // add also virtual columns
+                if (VirtualColumns.Count > 0)
+                {
+                    foreach (var virtualColumn in VirtualColumns)
+                    {
+                        if (Columns != null && _fields != null &&
+                            (Columns.Any(x => string.Equals(x.Name, virtualColumn.Name, StringComparison.InvariantCultureIgnoreCase)) || _fields.Any(x => string.Equals(x, virtualColumn.Name, StringComparison.InvariantCultureIgnoreCase))))
+                        {
+                            throw new ArgumentException(string.Format(ExceptionMessage.ColumnAlreadyExists, virtualColumn.Name), "column");
+                        }
+                        _fieldCount++;
+                        _fields[_fieldCount] = virtualColumn.Name;
+                    }
+                }
 
                 // _fieldCount contains the last field index, but it must contains the field count,
                 // so increment by 1
@@ -1583,12 +1602,14 @@ namespace LumenWorks.Framework.IO.Csv
                         var col = Columns.Count < i + 1 ? null : Columns[i];
                         if (col == null)
                         {
-                            col = new Column
+                            var virtualColumn = VirtualColumns.SingleOrDefault(x => string.Equals(headerName, x.Name, StringComparison.InvariantCultureIgnoreCase));
+                            col = virtualColumn ?? new Column
                             {
                                 Name = headerName,
                                 // Default to string if not assigned.
-                                Type = typeof(string)
+                                Type = typeof (string)
                             };
+                            
                             _fieldHeaderIndexes.Add(headerName, i);
                             // Should be correct as we are going in ascending order.
                             Columns.Add(col);

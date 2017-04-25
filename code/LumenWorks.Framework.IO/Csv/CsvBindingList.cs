@@ -23,6 +23,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 
 namespace LumenWorks.Framework.IO.Csv
 {
@@ -79,7 +80,7 @@ namespace LumenWorks.Framework.IO.Csv
             }
         }
 
-        public void ApplySort(PropertyDescriptor property, System.ComponentModel.ListSortDirection direction)
+        public void ApplySort(PropertyDescriptor property, ListSortDirection direction)
         {
             _sort = (CsvPropertyDescriptor)property;
             _direction = direction;
@@ -131,12 +132,12 @@ namespace LumenWorks.Framework.IO.Csv
             get { return true; }
         }
 
-        public System.ComponentModel.ListSortDirection SortDirection
+        public ListSortDirection SortDirection
         {
             get { return _direction; }
         }
 
-        public event System.ComponentModel.ListChangedEventHandler ListChanged
+        public event ListChangedEventHandler ListChanged
         {
             add { }
             remove { }
@@ -174,7 +175,7 @@ namespace LumenWorks.Framework.IO.Csv
                 var properties = new PropertyDescriptor[_csv.FieldCount];
 
                 for (var i = 0; i < properties.Length; i++)
-                    properties[i] = new CsvPropertyDescriptor(((System.Data.IDataReader)_csv).GetName(i), i);
+                    properties[i] = new CsvPropertyDescriptor(((IDataReader)_csv).GetName(i), i);
 
                 _properties = new PropertyDescriptorCollection(properties);
             }
@@ -329,7 +330,7 @@ namespace LumenWorks.Framework.IO.Csv
             get { return null; }
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
         }

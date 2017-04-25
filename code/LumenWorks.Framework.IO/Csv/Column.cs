@@ -1,9 +1,8 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 
 namespace LumenWorks.Framework.IO.Csv
 {
-    using System;
-
     /// <summary>
     /// Metadata about a CSV column.
     /// </summary>

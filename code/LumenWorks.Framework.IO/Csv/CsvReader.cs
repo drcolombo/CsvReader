@@ -1131,7 +1131,7 @@ namespace LumenWorks.Framework.IO.Csv
                 if (_currentRecordIndex < 0)
                     throw new InvalidOperationException(ExceptionMessage.NoCurrentRecord);
 
-                if (field >= _fieldCount || VirtualColumns.Contains(Columns[field]) && Columns[field].DefaultValue != null)
+                if (field >= _fieldCount || field >= 0 && Columns.Count > 0 && VirtualColumns.Contains(Columns[field]) && Columns[field].DefaultValue != null)
                 {
                     // Use the column default as UseColumnDefaults is true at this point
                     return Columns[field].DefaultValue;

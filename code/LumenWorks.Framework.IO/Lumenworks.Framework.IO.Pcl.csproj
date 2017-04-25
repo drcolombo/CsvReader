@@ -42,6 +42,7 @@
     <Compile Include="Csv\Events\ParseErrorEventArgs.cs" />
     <Compile Include="Csv\Exceptions\MalformedCsvException.cs" />
     <Compile Include="Csv\Exceptions\MissingFieldCsvException.cs" />
+    <Compile Include="Csv\IntrospectionExtensions.cs" />
     <Compile Include="Csv\MissingFieldAction.cs" />
     <Compile Include="Csv\ParseErrorAction.cs" />
     <Compile Include="Csv\Resources\ExceptionMessage.Designer.cs" />

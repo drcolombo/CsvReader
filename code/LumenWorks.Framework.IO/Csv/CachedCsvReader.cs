@@ -20,6 +20,7 @@
 //	ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -32,7 +33,7 @@ namespace LumenWorks.Framework.IO.Csv
     /// <summary>
     /// Represents a reader that provides fast, cached, dynamic access to CSV data.
     /// </summary>
-    /// <remarks>The number of records is limited to <see cref="System.Int32.MaxValue"/> - 1.</remarks>
+    /// <remarks>The number of records is limited to <see cref="Int32.MaxValue"/> - 1.</remarks>
     public class CachedCsvReader : CsvReader, IListSource
     {
         /// <summary>
@@ -360,7 +361,7 @@ namespace LumenWorks.Framework.IO.Csv
             get { return false; }
         }
 
-        System.Collections.IList IListSource.GetList()
+        IList IListSource.GetList()
         {
             return _bindingList ?? (_bindingList = new CsvBindingList(this));
         }

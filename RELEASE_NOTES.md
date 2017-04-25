@@ -1,3 +1,8 @@
+#### 4.0.0 (2017-04-25)
+* Added VirtualColumns to handle columns that are not presented in the source CSV file but they should be handled in case of CvsReader is used as IDataReader (@drcolombo)
+* Removed PCL library (@drcolombo)
+* All projects target .NET 4.0 (@drcolombo)
+
 #### 3.9.1 (2016-04-09)
 * Added max field length for quoted fields (@criteo)
 * Strengthen Debug.Assert condition in GetSchemaWithoutHeaders (@joshgo)

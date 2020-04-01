@@ -12,14 +12,10 @@
     <AssemblyName>LumenWorks.Framework.IO</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <SccProjectName>
-    </SccProjectName>
-    <SccLocalPath>
-    </SccLocalPath>
-    <SccAuxPath>
-    </SccAuxPath>
-    <SccProvider>
-    </SccProvider>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>LumenWorks.Framework.snk</AssemblyOriginatorKeyFile>
     <FileUpgradeFlags>
@@ -73,6 +69,7 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="Csv\CachedCsvReader.cs" />
+    <Compile Include="Csv\ColumnCollection.cs" />
     <Compile Include="Csv\CsvBindingList.cs" />
     <Compile Include="Csv\CsvPropertyDescriptor.cs" />
     <Compile Include="Csv\CsvRecordComparer.cs" />
@@ -97,6 +94,7 @@
     <EmbeddedResource Include="Csv\Resources\ExceptionMessage.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ExceptionMessage.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -367,7 +367,7 @@ namespace LumenWorks.Framework.IO.Csv
             _supportsMultiline = true;
             _skipEmptyLines = true;
 
-            Columns = new List<Column>();
+            Columns = new ColumnCollection();
             DefaultHeaderName = "Column";
 
             _currentRecordIndex = -1;
@@ -575,7 +575,7 @@ namespace LumenWorks.Framework.IO.Csv
         /// <summary>
         /// Gets or sets column information for the CSV.
         /// </summary>
-        public IList<Column> Columns { get; set; }
+        public ColumnCollection Columns { get; set; }
 
         /// <summary>
         /// Gets or sets whether we should use the column default values if the field is not in the record.
@@ -1562,7 +1562,7 @@ namespace LumenWorks.Framework.IO.Csv
                     foreach (var virtualColumn in VirtualColumns)
                     {
                         if (Columns != null && _fields != null &&
-                            (Columns.Any(x => string.Equals(x.Name, virtualColumn.Name, StringComparison.InvariantCultureIgnoreCase)) || _fields.Any(x => string.Equals(x, virtualColumn.Name, StringComparison.InvariantCultureIgnoreCase))))
+                            (Columns.Contains(virtualColumn.Name) || _fields.Any(x => string.Equals(x, virtualColumn.Name, StringComparison.InvariantCultureIgnoreCase))))
                         {
                             throw new ArgumentException(string.Format(ExceptionMessage.ColumnAlreadyExists, virtualColumn.Name), "column");
                         }
@@ -2113,14 +2113,14 @@ namespace LumenWorks.Framework.IO.Csv
                 false					// 21- IsRowVersion
             };
 
-            IList<Column> columns;
+            ColumnCollection columns;
             if (Columns.Count > 0)
             {
                 columns = Columns;
             }
             else
             {
-                columns = new List<Column>();
+                columns = new ColumnCollection();
                 for (var i = 0; i < _fieldCount; i++)
                 {
                     columns.Add(new Column

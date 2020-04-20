@@ -20,6 +20,7 @@
 //	ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.IO;
@@ -228,6 +229,38 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
 				Assert.IsFalse(reader.Read());
 			}
 		}
+
+		[Test()]
+		public void ReadWithExcludeFilterTest()
+		{
+            var sampleData1 = new List<SampleData1>();
+            var sampleData2 = new List<SampleData1>();
+            using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), true))
+            {
+                IDataReader reader = csv;
+
+                while (reader.Read())
+                {
+                    sampleData1.Add(new SampleData1(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString()));
+                }
+			}
+            using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), true))
+            {
+                csv.ExcludeFilter = () => csv["Zip Code"] == "00123";
+
+                IDataReader reader = csv;
+
+                while (reader.Read())
+                {
+                    sampleData2.Add(new SampleData1(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString()));
+                }
+            }
+
+            sampleData1.Should().HaveCount(6);
+            sampleData1.Should().Contain(x => x.ZipCode == "00123");
+            sampleData2.Should().HaveCount(5);
+            sampleData2.Should().NotContain(x => x.ZipCode == "00123");
+        }
 
 		[Test()]
 		public void ReadReaderClosedTest()
@@ -759,5 +792,25 @@ namespace LumenWorks.Framework.Tests.Unit.IO.Csv
 		}
 
 		#endregion
-	}
+
+        private class SampleData1
+        {
+            public SampleData1(string firstName, string lastName, string address, string city, string state, string zipCode)
+            {
+                FirstName = firstName;
+                LastName = lastName;
+                Address = address;
+                City = city;
+                State = state;
+                ZipCode = zipCode;
+            }
+
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public string Address { get; set; }
+            public string City { get; set; }
+            public string State { get; set; }
+            public string ZipCode { get; set; }
+        }
+    }
 }

@@ -147,6 +147,8 @@ namespace LumenWorks.Framework.IO.Csv
         /// </summary>
         public List<Column> VirtualColumns = new List<Column>();
 
+        public Func<bool> ExcludeFilter = null;
+
         /// <summary>
         /// Contains the current record index in the CSV file.
         /// A value of <see cref="M:Int32.MinValue"/> means that the reader has not been initialized yet.
@@ -1687,6 +1689,11 @@ namespace LumenWorks.Framework.IO.Csv
                 _missingFieldFlag = false;
                 _parseErrorFlag = false;
                 _currentRecordIndex++;
+
+                if (ExcludeFilter != null && ExcludeFilter.Invoke())
+                {
+                    return ReadNextRecord(onlyReadHeaders, skipToNextLine);
+                }
             }
 
             return true;

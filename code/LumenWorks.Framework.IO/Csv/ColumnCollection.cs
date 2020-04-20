@@ -29,7 +29,7 @@ namespace LumenWorks.Framework.IO.Csv
                 try
                 {
                     // Perf: use the readonly _list field directly and let ArrayList check the range
-                    return (Column) _list[index];
+                    return _list[index];
                 }
                 catch (ArgumentOutOfRangeException)
                 {
@@ -52,7 +52,7 @@ namespace LumenWorks.Framework.IO.Csv
                     // Case-Insensitive compares
                     var index = IndexOfCaseInsensitive(name);
                     if (0 <= index)
-                        column = (Column) _list[index];
+                        column = _list[index];
                     else if (-2 == index) throw new ApplicationException("Case sensitive name conflict");
                 }
 

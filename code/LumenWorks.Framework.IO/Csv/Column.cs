@@ -10,6 +10,7 @@ namespace LumenWorks.Framework.IO.Csv
     {
         private Type type;
         private string typeName;
+        internal int _hashCode;
 
         /// <summary>
         /// Creates a new instance of the <see cref="Column" /> class.

@@ -1658,42 +1658,40 @@ namespace LumenWorks.Framework.IO.Csv
             }
             else
             {
-                if (skipToNextLine)
-                    SkipToNewLine(ref _nextFieldStart);
-                else if (_currentRecordIndex > -1 && !_missingFieldFlag)
+                do
                 {
-                    // If not already at end of record, move there
-                    if (!_eol && !_eof)
+                    if (skipToNextLine)
+                        SkipToNewLine(ref _nextFieldStart);
+                    else if (_currentRecordIndex > -1 && !_missingFieldFlag)
                     {
-                        HandleExtraFieldsInCurrentRecord(_nextFieldStart);
+                        // If not already at end of record, move there
+                        if (!_eol && !_eof)
+                        {
+                            HandleExtraFieldsInCurrentRecord(_nextFieldStart);
+                        }
                     }
-                }
 
-                if (!_firstRecordInCache && !SkipEmptyAndCommentedLines(ref _nextFieldStart))
-                    return false;
+                    if (!_firstRecordInCache && !SkipEmptyAndCommentedLines(ref _nextFieldStart))
+                        return false;
 
-                if (_hasHeaders || !_firstRecordInCache)
-                    _eol = false;
+                    if (_hasHeaders || !_firstRecordInCache)
+                        _eol = false;
 
-                // Check to see if the first record is in cache.
-                // This can happen when initializing a reader with no headers
-                // because one record must be read to get the field count automatically
-                if (_firstRecordInCache)
-                    _firstRecordInCache = false;
-                else
-                {
-                    Array.Clear(_fields, 0, _fields.Length);
-                    _nextFieldIndex = 0;
-                }
+                    // Check to see if the first record is in cache.
+                    // This can happen when initializing a reader with no headers
+                    // because one record must be read to get the field count automatically
+                    if (_firstRecordInCache)
+                        _firstRecordInCache = false;
+                    else
+                    {
+                        Array.Clear(_fields, 0, _fields.Length);
+                        _nextFieldIndex = 0;
+                    }
 
-                _missingFieldFlag = false;
-                _parseErrorFlag = false;
-                _currentRecordIndex++;
-
-                if (ExcludeFilter != null && ExcludeFilter.Invoke())
-                {
-                    return ReadNextRecord(onlyReadHeaders, skipToNextLine);
-                }
+                    _missingFieldFlag = false;
+                    _parseErrorFlag = false;
+                    _currentRecordIndex++;
+                } while (ExcludeFilter != null && ExcludeFilter.Invoke());
             }
 
             return true;

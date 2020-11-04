@@ -1,3 +1,9 @@
+#### 4.1.0 (2020-11-04)
+*  Added tests for VirtualColumns
+*  Merged the DefaultColumnHeader from https://github.com/Spintronic/CsvReader
+*  A whole solution is refactored and rebuilt targeting .NET 4.5, .NET Core 3.1
+*  Completetly re-written Demo projects
+
 #### 4.0.0 (2017-04-25)
 * Added VirtualColumns to handle columns that are not presented in the source CSV file but they should be handled in case of CvsReader is used as IDataReader (@drcolombo)
 * Removed PCL library (@drcolombo)

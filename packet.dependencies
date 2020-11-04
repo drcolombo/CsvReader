@@ -1,0 +1,44 @@
+group build
+    source https://api.nuget.org/v3/index.json
+    storage: none
+
+    nuget FSharp.Core 4.3.4
+    nuget Newtonsoft.Json
+    nuget NuGet.Protocol
+    nuget NUnit
+    nuget Fake.Core.Target
+    nuget Fake.DotNet.Cli
+    nuget Fake.DotNet.Paket
+    nuget Fake.IO.FileSystem
+    nuget Paket.Core
+
+group netcorebuild
+    source https://api.nuget.org/v3/index.json
+    framework: netstandard2.0
+    storage: none
+
+    nuget FSharp.Core
+    nuget System.AppContext
+    nuget Fake.Api.GitHub
+    nuget Fake.Core.Target
+    nuget Fake.Core.SemVer
+    nuget Fake.BuildServer.AppVeyor
+    nuget Fake.BuildServer.TeamCity
+    nuget Fake.BuildServer.Travis
+    nuget Fake.BuildServer.TeamFoundation
+    nuget Fake.BuildServer.GitLab
+    nuget Fake.IO.FileSystem
+    nuget Fake.IO.Zip
+    nuget Fake.Core.ReleaseNotes
+    nuget Fake.DotNet.AssemblyInfoFile
+    nuget Fake.DotNet.MsBuild
+    nuget Fake.DotNet.Cli
+    nuget Fake.DotNet.NuGet
+    nuget Fake.DotNet.Paket
+    nuget Fake.DotNet.FSFormatting
+    nuget Fake.DotNet.Testing.MSpec
+    nuget Fake.DotNet.Testing.XUnit2
+    nuget Fake.DotNet.Testing.NUnit
+    nuget Fake.Windows.Chocolatey
+    nuget Fake.Tools.Git
+    nuget Paket.Core // prerelease

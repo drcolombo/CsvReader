@@ -1,0 +1,41 @@
+﻿@model FileUpload
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<form enctype="multipart/form-data" method="post" asp-controller="Home" asp-action="Upload">
+    <dl>
+        <dt>
+            <label asp-for="Separator"></label>
+        </dt>
+        <dd>
+            <input type="text" asp-for="Separator" maxlength="1" width="10" value="@Model.Separator" />
+        </dd>
+        <dt>
+            <label asp-for="FormFile"></label>
+        </dt>
+        <dd>
+            <input asp-for="FormFile" type="file" accept="*.csv">
+            <span asp-validation-for="FormFile"></span>
+        </dd>
+    </dl>
+    <input class="btn" type="submit" value="Upload" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+</form>
+
+    @if (Model != null)
+    {
+        <table>
+        @for (var row = 0; row < Model.Data.Rows.Count; row++)
+        {
+            <tr>
+                @for (var column = 0; column < Model.Data.Columns.Count; column++)
+                {
+                    <td>
+                        @Model.Data.Rows[row][column]
+                    </td>
+                }
+            </tr>
+        }
+        </table>
+    }

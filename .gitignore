@@ -227,3 +227,6 @@ $RECYCLE.BIN/
 /.fake
 
 .ionide
+/.vs
+/.vscode
+

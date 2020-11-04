@@ -4,11 +4,11 @@ using System.Reflection;
 
 [assembly: AssemblyVersion("4.1.0")]
 [assembly: AssemblyFileVersion("4.1.0")]
-[assembly: AssemblyInformationalVersion("4.1.0 e6c665")]
+[assembly: AssemblyInformationalVersion("4.1.0 00cb8d")]
 namespace System {
     internal static class AssemblyVersionInformation {
         internal const System.String AssemblyVersion = "4.1.0";
         internal const System.String AssemblyFileVersion = "4.1.0";
-        internal const System.String AssemblyInformationalVersion = "4.1.0 e6c665";
+        internal const System.String AssemblyInformationalVersion = "4.1.0 00cb8d";
     }
 }

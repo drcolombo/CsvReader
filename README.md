@@ -14,9 +14,8 @@ Welcome to contributions from anyone.
 You can see the version history [here](RELEASE_NOTES.md).
 
 ## Build the project
-* Windows: Run *build.cmd*
-
-I have my tools in C:\Tools so I use *build.cmd Default tools=C:\Tools encoding=UTF-8*
+* Install [Fake](https://fake.build/fake-gettingstarted.html)
+* In the command line run *dotnet fake build*
 
 ## Library License
 
@@ -181,9 +180,26 @@ The additional columns should be added at the end of the Columns collection to a
 		}
 	}
 ```
-To give an idea of performance, this took a naive sample app using an ORM from 2m 27s to 1.37s using SBC and the full import took just over 11m to import 9.8m records.
-	
+
+#### VirtualColumns
+It may happen that your database table where you would like to import a CSV contains more or different columns than your CSV file.
+As SqlBulkCopy requires to define all column mappings from the target table, you can use the VirtualColumns functionality:
+```csharp
+    csv.VirtualColumns.Add(new Column { Name = "SourceTypeId", Type = typeof(int), DefaultValue = "1", NumberStyles = NumberStyles.Integer });
+    csv.VirtualColumns.Add(new Column { Name = "DataBatchId", Type = typeof(int), DefaultValue = dataBatchId.ToString(), NumberStyles = NumberStyles.Integer });
+```
+In this case you define 2 additional columns that do not exist in the source CSV file, but exist in the target table. Also you can set the DefaultValue that will be bulk-copied to the target table together with the CSV file content. Do not forget to include the defined virtual columns to the SqlBulkCopy column mapping!
+
+#### ExcludeFilter
+In case if your CSV file is big enough and you do not want to import a whole file but some set of data, you can set the ExcludeFilter action:
+```csharp
+csv.ExcludeFilter = () => ((csv["Fmly"] ?? "") + (csv["Group"] ?? "") + (csv["Type"] ?? "")).ToUpperInvariant() == "EQDEQUIT";
+```
+In this case all rows that fit the defined criteria will not be imported to the database.
+
 ## Performance
+To give an idea of performance, this took a naive sample app using an ORM from 2m 27s to 1.37s using SBC and the full import took just over 11m to import 9.8m records.
+
 One of the main reasons for using this library is its excellent performance on reading/parsing raw data, here's a recent run of the benchmark (which is in the source)
 ```csharp
 Test pass #1 - All fields

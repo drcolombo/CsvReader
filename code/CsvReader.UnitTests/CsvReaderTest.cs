@@ -1074,6 +1074,7 @@ namespace CsvReader.UnitTests
 
             using (var csv = new CsvReader(new StringReader(data), false))
             {
+                csv.DefaultParseErrorAction = ParseErrorAction.ThrowException;
                 csv.MaxQuotedFieldLength = 10;
                 csv.Invoking(x => x.ReadNextRecord()).Should().Throw<MalformedCsvException>();
             }

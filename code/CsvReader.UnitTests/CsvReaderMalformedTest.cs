@@ -23,9 +23,12 @@
 // A special thanks goes to "shriop" at CodeProject for providing many of the standard and Unicode parsing tests.
 
 
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using CsvReader.Events;
 using CsvReader.Exceptions;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace CsvReader.UnitTests
@@ -88,7 +91,8 @@ namespace CsvReader.UnitTests
 			// test csv
 
 			using (CsvReader csv = new CsvReader(new StringReader(sb.ToString()), false, bufferSize))
-			{
+            {
+                csv.DefaultParseErrorAction = ParseErrorAction.ThrowException;
 				csv.MissingFieldAction = action;
 				Assert.AreEqual(fieldCount, csv.FieldCount);
 
@@ -186,7 +190,8 @@ namespace CsvReader.UnitTests
 			string[] buffer = new string[2];
 
 			using (CsvReader csv = new CsvReader(new StringReader(sample), false))
-			{
+            {
+                csv.DefaultParseErrorAction = ParseErrorAction.ThrowException;
 			    try
 			    {
 			        while (csv.ReadNextRecord())
@@ -374,6 +379,48 @@ namespace CsvReader.UnitTests
                     Assert.Fail();
                 }
             }
+        }
+
+		[Test()]
+		public void MissingDelimiterAfterQuotedFieldTestRaiseEvent()
+		{
+			// arrange
+			const string Data = "\"111\",\"222\",\"333\"\n\"111\",\"222\"\"333\"";
+            var actualErrors = new List<ParseErrorEventArgs>();
+            var expectedErrors = new List<ParseErrorEventArgs>
+            {
+                new ParseErrorEventArgs(
+                    new MalformedCsvException(
+						"\"111\",\"222\",\"333\"\n\"111\",\"222\"\"333\"",
+						29, 1, 1), ParseErrorAction.RaiseEvent),
+                new ParseErrorEventArgs(
+                    new MalformedCsvException(
+						string.Empty,
+                        34, 1, 2), ParseErrorAction.RaiseEvent),
+            };
+
+			// act
+			using (CsvReader csv = new CsvReader(new StringReader(Data), false, ',', '"', '\\', '#', ValueTrimmingOptions.UnquotedOnly))
+            {
+                csv.ParseError += (sender, args) =>
+                {
+                    actualErrors.Add(args);
+                };
+				while (csv.ReadNextRecord())
+					for (int i = 0; i < csv.FieldCount; i++)
+					{
+						string s = csv[i];
+					}
+			}
+
+			// assert
+            actualErrors.Should().BeEquivalentTo(expectedErrors, options => options
+                .Including(x => x.Error.RawData)
+                .Including(x => x.Error.CurrentFieldIndex)
+                .Including(x => x.Error.CurrentRecordIndex)
+                .Including(x => x.Error.CurrentPosition)
+                .Including(x => x.Error.Message)
+            );
         }
 
 		[Test()]

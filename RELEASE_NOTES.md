@@ -1,3 +1,6 @@
+#### 4.1.2 (2021-07-12)
+* Raising the ParseError event instead of MalformedCsvException when the DefaultParseErrorAction is RaiseEvent (thanks to @lancasteradam)
+
 #### 4.1.1 (2021-07-12)
 * Added an additional CsvReader/CachedCsvReader constructor parameter to specify a custom 'new line' character
 

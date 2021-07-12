@@ -1789,31 +1789,11 @@ namespace CsvReader
                     throw error;
 
                 case ParseErrorAction.RaiseEvent:
-                    var e = new ParseErrorEventArgs(error, ParseErrorAction.ThrowException);
+                    var e = new ParseErrorEventArgs(error, ParseErrorAction.RaiseEvent);
                     OnParseError(e);
-
-                    switch (e.Action)
-                    {
-                        case ParseErrorAction.ThrowException:
-                            throw e.Error;
-
-                        case ParseErrorAction.RaiseEvent:
-                            throw new InvalidOperationException(
-                                string.Format(CultureInfo.InvariantCulture,
-                                    ExceptionMessage.ParseErrorActionInvalidInsideParseErrorEvent, e.Action), e.Error);
-
-                        case ParseErrorAction.AdvanceToNextLine:
-                            // already at EOL when fields are missing, so don't skip to next line in that case
-                            if (!_missingFieldFlag && pos >= 0)
-                                SkipToNewLine(ref pos);
-                            break;
-
-                        default:
-                            throw new NotSupportedException(
-                                string.Format(CultureInfo.InvariantCulture,
-                                    ExceptionMessage.ParseErrorActionNotSupported, e.Action), e.Error);
-                    }
-
+                    // already at EOL when fields are missing, so don't skip to next line in that case
+                    if (!_missingFieldFlag && pos >= 0)
+                        SkipToNewLine(ref pos);
                     break;
 
                 case ParseErrorAction.AdvanceToNextLine:

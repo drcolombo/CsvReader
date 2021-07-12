@@ -1,12 +1,12 @@
 CSV Reader
 ==========
 
-The [CsvReader](https://www.nuget.org/packages/LumenWorksCsvReader/) library is an extended version of Sébastien Lorion's [fast CSV Reader](http://www.codeproject.com/Articles/9258/A-Fast-CSV-Reader) project 
+The [CsvReader](https://www.nuget.org/packages/LumenWorksCsvReader2/) library is an extended version of Sébastien Lorion's [fast CSV Reader](http://www.codeproject.com/Articles/9258/A-Fast-CSV-Reader) project 
 and provides fast parsing and reading of CSV files
 
 [![NuGet](https://img.shields.io/nuget/v/LumenWorksCsvReader2?style=flat-square&label=nuget)](https://www.nuget.org/packages/LumenWorksCsvReader2/) [![Build status](https://ci.appveyor.com/api/projects/status/q4a0jwsice979tr4/branch/master?svg=true)](https://ci.appveyor.com/project/drcolombo/csvreader/branch/master)
 
-To this end it is a straight drop-in replacement for the existing NuGet package [LumenWork.Framework.IO](https://www.nuget.org/packages/LumenWorks.Framework.IO/), but with additional
+To this end it is a straight drop-in replacement for the existing NuGet package [LumenWork.Framework.IO](https://www.nuget.org/packages/LumenWorks.Framework.IO/) and [LumenWorksCsvReader](https://www.nuget.org/packages/LumenWorksCsvReader2/), but with additional
 capabilities; the other rationale for the project is that the code is not available elsewhere in a public source repository, making it difficult to extend/contribute to.
 
 Welcome to contributions from anyone.

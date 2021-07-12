@@ -1,3 +1,6 @@
+#### 4.1.1 (2021-07-12)
+* Added an additional CsvReader/CachedCsvReader constructor parameter to specify a custom 'new line' character
+
 #### 4.1.0 (2020-11-04)
 * Added tests for VirtualColumns
 * Merged the DefaultColumnHeader from https://github.com/Spintronic/CsvReader

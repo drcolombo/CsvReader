@@ -1092,6 +1092,38 @@ namespace CsvReader.UnitTests
             }
         }
 
+        [Test]
+        public void ParsingTest46()
+        {
+            const string data = "abc,def≈gh,ij≈ ≈k,lmn≈";
+
+            using (var csv = new CsvReader(new StringReader(data), false, ',', '\"', '\\', '#', ValueTrimmingOptions.None, CsvReader.DefaultBufferSize, null, '≈'))
+            {
+                csv.MissingFieldAction = MissingFieldAction.ReplaceByNull;
+                csv.ReadNextRecord().Should().BeTrue();
+                csv.FieldCount.Should().Be(2);
+                csv[0].Should().Be("abc");
+                csv[1].Should().Be("def");
+
+                csv.ReadNextRecord().Should().BeTrue();
+                csv.FieldCount.Should().Be(2);
+                csv[0].Should().Be("gh");
+                csv[1].Should().Be("ij");
+
+                csv.ReadNextRecord().Should().BeTrue();
+                csv.FieldCount.Should().Be(2);
+                csv[0].Should().Be(" ");
+                csv[1].Should().BeNull();
+
+                csv.ReadNextRecord().Should().BeTrue();
+                csv.FieldCount.Should().Be(2);
+                csv[0].Should().Be("k");
+                csv[1].Should().Be("lmn");
+
+                csv.ReadNextRecord().Should().BeFalse();
+            }
+        }
+
         #endregion
 
         #region UnicodeParsing tests

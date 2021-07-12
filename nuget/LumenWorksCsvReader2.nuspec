@@ -1,29 +1,31 @@
-﻿<?xml version="1.0"?>
-<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
-    <metadata>
-        <id>LumenWorksCsvReader2</id>
-        <title>LumenWorks CSV Reader 2</title>
-        <description>An extended version of LumenWorksCsvReader</description>
-        <version>1.0.0</version>
-        <licenseUrl>http://opensource.org/licenses/mit-license.php</licenseUrl>
-        <copyright>Copyright © 2005 Sébastien Lorion, 2014 Paul Hatcher, 2020 Maxim Ivanov</copyright>
-        <owners>Maxim Ivanov</owners>
-        <authors>Sébastien Lorion, Paul Hatcher, Maxim Ivanov</authors>
-        <projectUrl>https://github.com/drcolombo/CsvReader</projectUrl>
-        <releaseNotes>@releaseNotes@</releaseNotes>
-        <tags>CSV cvs-reader</tags>
-        <dependencies>
-            <group targetFramework=".NETFramework4.5" />
-            <group targetFramework=".NETCoreApp3.1" />
-            <group targetFramework=".NETStandard2.0">
-                <dependency id="NETStandard.Library" version="2.0.3"/>
-            </group>
-        </dependencies>
-        <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    </metadata>
-    <files>
-        <file src="..\build\CsvReader\Release\net45\CsvReader.*" target="lib\net45" />
-        <file src="..\build\CsvReader\Release\netcoreapp3.1\CsvReader.*" target="lib\netcoreapp3.1" />
-        <file src="..\build\CsvReader\Release\netstandard2.0\CsvReader.*" target="lib\netstandard2.0" />
-    </files>
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>LumenWorksCsvReader2</id>
+    <version>4.1.1</version>
+    <title>LumenWorks CSV Reader 2</title>
+    <authors>Sébastien Lorion, Paul Hatcher, Maxim Ivanov</authors>
+    <owners>Maxim Ivanov</owners>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <projectUrl>https://github.com/drcolombo/CsvReader</projectUrl>
+    <repository type="github" url="https://github.com/drcolombo/CsvReader" />
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>An extended version of LumenWorksCsvReader</description>
+    <releaseNotes>Added an additional CsvReader constructor parameter to specify a custom 'new line' character</releaseNotes>
+    <copyright>Copyright © 2005 Sébastien Lorion, 2014 Paul Hatcher, 2020 Maxim Ivanov</copyright>
+    <tags>CSV cvs-reader</tags>
+    <dependencies>
+      <group targetFramework=".NETFramework4.5" />
+      <group targetFramework=".NETCoreApp3.1" />
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="NETStandard.Library" version="2.0.3"/>
+	  </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\build\CsvReader\Release\net45\CsvReader.*" target="lib\net45" />
+    <file src="..\build\CsvReader\Release\netcoreapp3.1\CsvReader.*" target="lib\netcoreapp3.1" />
+    <file src="..\build\CsvReader\Release\netstandard2.0\CsvReader.*" target="lib\netstandard2.0" />
+  </files>
 </package>

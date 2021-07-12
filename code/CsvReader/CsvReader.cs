@@ -65,6 +65,11 @@ namespace CsvReader
         public const char DefaultComment = '#';
 
         /// <summary>
+        /// Defines the default new line delimiter.
+        /// </summary>
+        public const char DefaultNewLineDelimiter = '\r';
+
+        /// <summary>
         /// Contains the <see cref="T:TextReader"/> pointing to the CSV file.
         /// </summary>
         private TextReader _reader;
@@ -219,6 +224,11 @@ namespace CsvReader
         private bool _parseErrorFlag;
 
         /// <summary>
+        /// Contains the new line delimiter
+        /// </summary>
+        private char _newLineDelimiter;
+
+        /// <summary>
         /// Initializes a new instance of the CsvReader class.
         /// </summary>
         /// <param name="reader">A <see cref="T:TextReader"/> pointing to the CSV file.</param>
@@ -331,6 +341,7 @@ namespace CsvReader
         /// <param name="trimmingOptions">Determines which values should be trimmed.</param>
         /// <param name="bufferSize">The buffer size in bytes.</param>
         /// <param name="nullValue">The value which denotes a DbNull-value.</param>
+        ///  <param name="newLineDelimiter">The newline delimiter.</param>
         /// <exception cref="T:ArgumentNullException">
         ///		<paramref name="reader"/> is a <see langword="null"/>.
         /// </exception>
@@ -338,7 +349,7 @@ namespace CsvReader
         ///		<paramref name="bufferSize"/> must be 1 or more.
         /// </exception>
         public CsvReader(TextReader reader, bool hasHeaders, char delimiter, char quote, char escape, char comment,
-            ValueTrimmingOptions trimmingOptions, int bufferSize, string nullValue = null)
+            ValueTrimmingOptions trimmingOptions, int bufferSize, string nullValue = null, char newLineDelimiter = DefaultNewLineDelimiter)
         {
 #if DEBUG
             _allocStack = new System.Diagnostics.StackTrace();
@@ -380,6 +391,7 @@ namespace CsvReader
 
             _currentRecordIndex = -1;
             _defaultParseErrorAction = ParseErrorAction.RaiseEvent;
+            _newLineDelimiter = newLineDelimiter;
         }
 
         /// <summary>
@@ -897,9 +909,9 @@ namespace CsvReader
 
             var c = _buffer[pos];
 
-            // Treat \r as new line only if it's not the delimiter
+            // Treat DefaultNewLineDelimiter as new line only if it's not the delimiter
 
-            if (c == '\r' && _delimiter != '\r')
+            if (c == DefaultNewLineDelimiter && _delimiter != DefaultNewLineDelimiter)
             {
                 pos++;
 
@@ -929,7 +941,7 @@ namespace CsvReader
 
                 return true;
             }
-            else if (c == '\n')
+            else if (c != DefaultNewLineDelimiter && (c == _newLineDelimiter || DefaultNewLineDelimiter == _newLineDelimiter && c == '\n'))
             {
                 pos++;
 
@@ -958,9 +970,9 @@ namespace CsvReader
 
             var c = _buffer[pos];
 
-            if (c == '\n')
+            if (c != DefaultNewLineDelimiter && (c == _newLineDelimiter || DefaultNewLineDelimiter == _newLineDelimiter && c == '\n'))
                 return true;
-            else if (c == '\r' && _delimiter != '\r')
+            else if (c == DefaultNewLineDelimiter && _delimiter != DefaultNewLineDelimiter)
                 return true;
             else
                 return false;
@@ -1125,7 +1137,7 @@ namespace CsvReader
 
                                     break;
                                 }
-                                else if (c == '\r' || c == '\n')
+                                else if (c == DefaultNewLineDelimiter || c != DefaultNewLineDelimiter && (c == _newLineDelimiter || DefaultNewLineDelimiter == _newLineDelimiter && c == '\n'))
                                 {
                                     _nextFieldStart = pos;
                                     _eol = true;
@@ -1331,7 +1343,10 @@ namespace CsvReader
                                 delimiterSkipped = true;
                             }
                             else if (_nextFieldStart < _bufferLength &&
-                                     (_buffer[_nextFieldStart] == '\r' || _buffer[_nextFieldStart] == '\n'))
+                                     (_buffer[_nextFieldStart] == DefaultNewLineDelimiter
+                                      || _buffer[_nextFieldStart] != DefaultNewLineDelimiter
+                                        && (_buffer[_nextFieldStart] == _newLineDelimiter
+                                          || DefaultNewLineDelimiter == _newLineDelimiter && _buffer[_nextFieldStart] == '\n')))
                             {
                                 _nextFieldStart++;
                                 _eol = true;

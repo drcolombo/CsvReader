@@ -170,8 +170,8 @@ namespace CsvReader
         /// <exception cref="ArgumentOutOfRangeException">
         ///		<paramref name="bufferSize"/> must be 1 or more.
         /// </exception>
-        public CachedCsvReader(TextReader reader, bool hasHeaders, char delimiter, char quote, char escape, char comment, ValueTrimmingOptions trimmingOptions, int bufferSize, string nullValue = null)
-            : base(reader, hasHeaders, delimiter, quote, escape, comment, trimmingOptions, bufferSize, nullValue)
+        public CachedCsvReader(TextReader reader, bool hasHeaders, char delimiter, char quote, char escape, char comment, ValueTrimmingOptions trimmingOptions, int bufferSize, string nullValue = null, char newLineDelimiter = DefaultNewLineDelimiter)
+            : base(reader, hasHeaders, delimiter, quote, escape, comment, trimmingOptions, bufferSize, nullValue, newLineDelimiter)
         {
             Records = new List<string[]>();
             _currentRecordIndex = -1;

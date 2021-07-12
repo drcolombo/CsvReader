@@ -30,7 +30,7 @@ open Fake.IO
 open Fake.DotNet.NuGet
 
 // Version info
-let authors = ["S�bastien Lorion"; "Paul Hatcher"; "Spintronic"]
+let authors = ["S�bastien Lorion"; "Paul Hatcher"; "Spintronic"; "Maxim Ivanov"]
 
 let release = ReleaseNotes.load "RELEASE_NOTES.md"
 

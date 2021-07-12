@@ -6,6 +6,14 @@
     <AssemblyOriginatorKeyFile>LumenWorks.Framework.snk</AssemblyOriginatorKeyFile>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <OutputPath>$(SolutionDir)build\CsvReader\$(Configuration)</OutputPath>
+    <PackageId>LumenWorksCsvReader2</PackageId>
+    <Authors>Sébastien Lorion, Paul Hatcher, Maxim Ivanov</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/drcolombo/CsvReader</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/drcolombo/CsvReader</RepositoryUrl>
+    <RepositoryType>github</RepositoryType>
+    <PackageTags>CSV cvs-reader</PackageTags>
+    <PackageReleaseNotes>Added an additional CsvReader constructor parameter to specify a custom 'new line' character</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

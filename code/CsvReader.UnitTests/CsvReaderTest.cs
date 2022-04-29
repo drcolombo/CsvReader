@@ -26,7 +26,6 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Windows.Forms;
 using CsvReader.Exceptions;
 using FluentAssertions;
 using NUnit.Framework;

@@ -22,7 +22,7 @@ Added support of .NET Framework 4.7.2, 4.8, .NET 5 and .NET 6
       <group targetFramework=".NETFramework4.8" />
       <group targetFramework=".NETCoreApp3.1" />
       <group targetFramework=".NET5.0" />
-      <group targetFramework=".NET6.0" />
+      <group targetFramework=".NET66.0" />
       <group targetFramework=".NETStandard2.0">
         <dependency id="NETStandard.Library" version="2.0.3"/>
 	  </group>

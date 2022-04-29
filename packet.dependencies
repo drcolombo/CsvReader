@@ -1,8 +1,9 @@
 group build
     source https://api.nuget.org/v3/index.json
+	framework: net6.0
     storage: none
 
-    nuget FSharp.Core 4.3.4
+    nuget FSharp.Core 6.0.3
     nuget Newtonsoft.Json
     nuget NuGet.Protocol
     nuget NUnit

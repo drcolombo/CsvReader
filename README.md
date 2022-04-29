@@ -201,58 +201,61 @@ In this case all rows that fit the defined criteria will not be imported to the 
 To give an idea of performance, this took a naive sample app using an ORM from 2m 27s to 1.37s using SBC and the full import took just over 11m to import 9.8m records.
 
 One of the main reasons for using this library is its excellent performance on reading/parsing raw data, here's a recent run of the benchmark (which is in the source)
-```csharp
-Test pass #1 - All fields
 
-CsvReader - No cache      : 3495429 ticks, 1.7940 sec., 24.5265 MB/sec.
-CachedCsvReader - Run 1   : 6641089 ticks, 3.4084 sec., 12.9091 MB/sec.
-CachedCsvReader - Run 2   : 4393 ticks, 0.0023 sec., 19515.3071 MB/sec.
-TextFieldParser           : 36877894 ticks, 18.9270 sec., 2.3247 MB/sec.
-Regex                     : 15011358 ticks, 7.7044 sec., 5.7111 MB/sec.
-
-Test pass #1 - Field #72 (middle)
-
-CsvReader - No cache      : 2085871 ticks, 1.0705 sec., 41.1007 MB/sec.
-CachedCsvReader - Run 1   : 6205399 ticks, 3.1848 sec., 13.8155 MB/sec.
-CachedCsvReader - Run 2   : 214 ticks, 0.0001 sec., 400610.9533 MB/sec.
-TextFieldParser           : 36458115 ticks, 18.7116 sec., 2.3515 MB/sec.
-Regex                     : 6976827 ticks, 3.5808 sec., 12.2879 MB/sec.
-
-
-Test pass #2 - All fields
-
-CsvReader - No cache      : 3431492 ticks, 1.7612 sec., 24.9835 MB/sec.
-CachedCsvReader - Run 1   : 6110812 ticks, 3.1363 sec., 14.0294 MB/sec.
-CachedCsvReader - Run 2   : 173 ticks, 0.0001 sec., 495553.4335 MB/sec.
-TextFieldParser           : 36671647 ticks, 18.8212 sec., 2.3378 MB/sec.
-Regex                     : 15064341 ticks, 7.7315 sec., 5.6910 MB/sec.
-
-Test pass #2 - Field #72 (middle)
-
-CsvReader - No cache      : 2162568 ticks, 1.1099 sec., 39.6430 MB/sec.
-CachedCsvReader - Run 1   : 5135074 ticks, 2.6355 sec., 16.6951 MB/sec.
-CachedCsvReader - Run 2   : 220 ticks, 0.0001 sec., 389685.2000 MB/sec.
-TextFieldParser           : 36913575 ticks, 18.9453 sec., 2.3225 MB/sec.
-Regex                     : 7107108 ticks, 3.6476 sec., 12.0627 MB/sec.
-
-
-Test pass #3 - All fields
-
-CsvReader - No cache      : 3552781 ticks, 1.8234 sec., 24.1306 MB/sec.
-CachedCsvReader - Run 1   : 5668694 ticks, 2.9094 sec., 15.1235 MB/sec.
-CachedCsvReader - Run 2   : 186 ticks, 0.0001 sec., 460917.9785 MB/sec.
-TextFieldParser           : 36650220 ticks, 18.8102 sec., 2.3392 MB/sec.
-Regex                     : 15108079 ticks, 7.7540 sec., 5.6745 MB/sec.
-
-Test pass #3 - Field #72 (middle)
-
-CsvReader - No cache      : 2212999 ticks, 1.1358 sec., 38.7396 MB/sec.
-CachedCsvReader - Run 1   : 5246701 ticks, 2.6928 sec., 16.3399 MB/sec.
-CachedCsvReader - Run 2   : 214 ticks, 0.0001 sec., 400610.9533 MB/sec.
-TextFieldParser           : 36718316 ticks, 18.8451 sec., 2.3348 MB/sec.
-Regex                     : 7049832 ticks, 3.6182 sec., 12.1607 MB/sec.
+|Test|                |.NET 4.7.2|.NET 4.8|.NET Core 3.1|.NET 5|.NET 6|
+|___|___|___|___|___|___|___|
+Test pass #1 - All fields|
+CsvReader - No cache   |18.029|17.4115|18.6588|20.9881|19.8229
+CachedCsvReader - Run 1|15.8878|15.6856|16.4155|19.478|19.2338
+CachedCsvReader - Run 2|103700.2121|100227.7904|119402.9851|102923.9766|119532.7357
+TextFieldParser        |10.6325|10.7448|11.3845|13.3976|13.4799
+Regex                  |11.0006|11.2566|11.603|16.8422|16.6653
+|
+Test pass #1 - Field #72 (middle)|||||
+CsvReader - No cache   |33.8842|34.4039|34.5182|48.3443|47.2414
+CachedCsvReader - Run 1|20.0675|20.0483|21.5359|24.4861|24.2664
+CachedCsvReader - Run 2|1647940.075|1325301.205|1050119.332|1148825.065|1170212.766
+TextFieldParser        |10.5588|10.8054|11.5507|13.6496|13.9692
+Regex                  |23.8385|24.2478|25.6357|40.7933|40.2386
+|
+Test pass #2 - All fields|||||
+CsvReader - No cache   |23.7762|24.7155|24.7757|29.4928|29.2318
+CachedCsvReader - Run 1|15.4433|15.4299|16.2404|19.0609|18.7912
+CachedCsvReader - Run 2|1325301.205|1506849.315|1100000|1242937.853|1428571.429
+TextFieldParser        |9.4764|10.7936|11.583|13.7241|14.1607
+Regex                  |9.8131|11.3284|11.8905|17.1912|17.816
+|
+Test pass #2 - Field #72 (middle)|||||
+CsvReader - No cache   |34.8114|34.8461|35.5218|49.8421|49.2037
+CachedCsvReader - Run 1|20.719|20.7746|21.8001|25.8437|25.2911
+CachedCsvReader - Run 2|1317365.27|1264367.816|1002277.904|1242937.853|1225626.741
+TextFieldParser        |10.3391|10.5819|11.5539|13.5875|14.1446
+Regex                  |23.8867|23.6028|25.0774|41.7542|40.7904
+|
+Test pass #3 - All fields|||||
+CsvReader - No cache   |24.5748|24.0699|24.4865|29.4968|29.041
+CachedCsvReader - Run 1|14.6422|14.7653|16.7683|20.3806|18.0145
+CachedCsvReader - Run 2|1379310.345|1383647.799|1006864.989|1173333.333|1157894.737
+TextFieldParser        |10.7302|10.6394|11.5478|13.5921|14.2006
+Regex                  |11.0881|11.0249|11.4958|17.9792|17.6474
+|
+Test pass #3 - Field #72 (middle)|||||
+CsvReader - No cache   |34.4315|35.0067|34.5559|50.7796|49.0471
+CachedCsvReader - Run 1|17.3084|19.1313|17.2032|21.462|23.9831
+CachedCsvReader - Run 2|1442622.951|1428571.429|1047619.048|1242937.853|1192411.924
+TextFieldParser        |10.7142|10.5523|11.5291|13.7035|14.1779
+Regex                  |23.3738|23.7406|25.1373|41.8325|41.2974
 
 
-Done
-```
-This was run on a high-spec machine (Xeon E5-2620, 16Gb RAM and 512Gb SSD; you have to have some toys!) so the overall thoughput would be good, but CsvReader performs at 10x the speed the TextFieldParser and 5x faster than Regex
+
+|Average of all test passes|.NET 4.7.2|.NET 4.8|.NET Core 3.1|.NET 5|.NET 6|
+|___|___|___|___|___|___|___|
+CsvReader - No cache   |28.2512|28.4089|28.7528|38.1573|37.2647
+CachedCsvReader - Run 1|17.3447|17.6392|18.3272|21.7852|21.5967
+CachedCsvReader - Run 2|1.202.706.6762|1.168.160.8923|887.714.0429|1.025.649.3224|1.049.041.7220
+TextFieldParser        |10.4085|10.6862|11.5248|13.6091|14.0222
+Regex                  |17.1668|17.5335|18.4733|29.3988|29.0759
+
+As you can see, an average performance slightly increases from full .NET Framework 4.7.2 to .NET Core 6.
+![Performance Chart](AveragePerformanceChart.png)
+This was run on a Core i5-8400 (6 cores), 32Gb RAM and 2Tb SSD.

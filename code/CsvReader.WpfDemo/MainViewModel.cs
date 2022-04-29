@@ -50,7 +50,19 @@ namespace WpfApp1
             }
         }
 
-        public DataView DataView => _data.AsDataView();
+        public DataView DataView
+        {
+            get
+            {
+#if NET472
+                return new DataView(_data);
+#elif NET48
+                return new DataView(_data);
+#else
+                return _data.AsDataView();
+#endif
+            }
+        }
 
         public char Separator
         {

@@ -1,3 +1,7 @@
+#### 4.2 (2022-04-29)
+* Removed support of .NET Framework 4.5
+* Added support of .NET Framework 4.7.2, 4.8, .NET 5 and .NET 6
+
 #### 4.1.2 (2021-07-12)
 * Raising the ParseError event instead of MalformedCsvException when the DefaultParseErrorAction is RaiseEvent (thanks to @lancasteradam)
 

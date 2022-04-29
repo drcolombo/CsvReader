@@ -18,8 +18,8 @@ namespace CsvReaderDemo
 		static void Main(string[] args)
 		{
 			//const string TestFile1 = @"..\..\test1.csv";
-			const string TestFile2 = @"..\..\test2.csv";
-			const string TestFile3 = @"..\..\test3.csv";
+			const string TestFile2 = "test2.csv";
+			const string TestFile3 = "test3.csv";
 
 			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
@@ -111,7 +111,8 @@ namespace CsvReaderDemo
 			//QueryPerformanceCounter(out end);
 			//GetStats(start, end, frequency, fileSize, out clocks, out time, out rate);
 
-			Console.WriteLine("{0} : {1} ticks, {2:f4} sec., {3:f4} MB/sec.", name.PadRight(25), counter.ElapsedTicks, counter.Elapsed.Seconds, fileSize / counter.Elapsed.Seconds);
+			//var mbsec = fileSize / (counter.Elapsed.Seconds > 0 ? counter.Elapsed.Seconds : counter.Elapsed.Milliseconds / 1000);
+			Console.WriteLine("{0} : {1} ticks, {2:f4} sec., {3:f4} MB/sec.", name.PadRight(25), counter.ElapsedTicks, counter.Elapsed.Seconds, fileSize / counter.Elapsed.TotalSeconds);
 
 			return value;
 		}

@@ -1,5 +1,5 @@
 //	LumenWorks.Framework.Tests.Unit.IO.CSV.CsvReaderIDataReaderTest
-//	Copyright (c) 2005 Sébastien Lorion
+//	Copyright (c) 2005 SÃ©bastien Lorion
 //
 //	MIT license (http://en.wikipedia.org/wiki/MIT_License)
 //
@@ -22,8 +22,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -60,7 +62,7 @@ namespace CsvReader.UnitTests
 				DataTable schema = reader.GetSchemaTable();
 
 			    // ReSharper disable once PossibleNullReferenceException
-				Assert.AreEqual(CsvReaderSampleData.SampleData1RecordCount, schema.Rows.Count);
+				Assert.AreEqual(CsvReaderSampleData.SampleData1FieldCount, schema.Rows.Count);
 
 				foreach (DataColumn column in schema.Columns)
 				{
@@ -119,6 +121,10 @@ namespace CsvReader.UnitTests
 							Assert.AreEqual(CsvReaderSampleData.SampleData1Header5, column["ColumnName"]);
 							Assert.AreEqual(CsvReaderSampleData.SampleData1Header5, column["BaseColumnName"]);
 							break;
+						case 6:
+							Assert.AreEqual(CsvReaderSampleData.SampleData1Header6, column["ColumnName"]);
+							Assert.AreEqual(CsvReaderSampleData.SampleData1Header6, column["BaseColumnName"]);
+                            break;
 						default:
 							throw new IndexOutOfRangeException();
 					}
@@ -136,7 +142,7 @@ namespace CsvReader.UnitTests
 				DataTable schema = reader.GetSchemaTable();
 
 			    // ReSharper disable once PossibleNullReferenceException
-				Assert.AreEqual(CsvReaderSampleData.SampleData1RecordCount, schema.Rows.Count);
+				Assert.AreEqual(CsvReaderSampleData.SampleData1FieldCount, schema.Rows.Count);
 
 				foreach (DataColumn column in schema.Columns)
 				{
@@ -235,24 +241,56 @@ namespace CsvReader.UnitTests
             var sampleData2 = new List<SampleData1>();
             using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), true))
             {
+                csv.CustomBooleanReplacer = new Dictionary<string, bool> { { "Y", true }, { "N", false } };
+                csv.MissingFieldAction = MissingFieldAction.ReplaceByNull;
                 IDataReader reader = csv;
 
-                while (reader.Read())
+                csv.Columns = new ColumnCollection
                 {
-                    sampleData1.Add(new SampleData1(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString()));
+                    {"First Name", typeof(string)},
+                    {"Last Name", typeof(string)},
+                    {"Address", typeof(string)},
+                    {"City", typeof(string)},
+                    {"State", typeof(string)},
+                    {"Zip Code", typeof(string)},
+                    {"IsActive", typeof(bool)},
+                };
+
+				while (reader.Read())
+                {
+                    var isActive = reader.GetValue(6);
+                    sampleData1.Add(new SampleData1(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(),
+                        reader[3].ToString(), reader[4].ToString(), reader[5].ToString(),
+                        isActive == DBNull.Value ? null : (bool?) isActive));
                 }
 			}
             using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), true))
             {
-                csv.ExcludeFilter = () => csv["Zip Code"] == "00123";
+                csv.CustomBooleanReplacer = new Dictionary<string, bool> { { "Y", true }, { "N", false } };
+                csv.MissingFieldAction = MissingFieldAction.ReplaceByNull;
 
                 IDataReader reader = csv;
 
-                while (reader.Read())
+                csv.Columns = new ColumnCollection
                 {
-                    sampleData2.Add(new SampleData1(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(), reader[3].ToString(), reader[4].ToString(), reader[5].ToString()));
+                    {"First Name", typeof(string)},
+                    {"Last Name", typeof(string)},
+                    {"Address", typeof(string)},
+                    {"City", typeof(string)},
+                    {"State", typeof(string)},
+                    {"Zip Code", typeof(string)},
+                    {"IsActive", typeof(bool)},
+                };
+                csv.ExcludeFilter = () => csv["Zip Code"] == "00123";
+
+				while (reader.Read())
+                {
+                    var isActive = reader.GetValue(6);
+                    sampleData2.Add(new SampleData1(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(),
+                        reader[3].ToString(), reader[4].ToString(), reader[5].ToString(),
+                        isActive == DBNull.Value ? null : (bool?)isActive));
                 }
-            }
+			}
 
             sampleData1.Should().HaveCount(6);
             sampleData1.Should().Contain(x => x.ZipCode == "00123");
@@ -373,7 +411,7 @@ namespace CsvReader.UnitTests
 		#region IDataRecord interface
 
 		[Test()]
-		public void GetBooleanTest()
+		public void GetBooleanTest1()
 		{
 			using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleTypedData1), true))
 			{
@@ -384,6 +422,33 @@ namespace CsvReader.UnitTests
 				{
 					Assert.AreEqual(value, reader.GetBoolean(reader.GetOrdinal(typeof(Boolean).FullName)));
 				}
+			}
+		}
+		
+		
+		[Test]
+		public void GetBooleanTest2()
+		{
+			// arrange
+			const string data = "Data,HasData\r\n\"data\", false\r\ntest, Y";
+
+			// act
+			// assert
+			using (var csv = new CsvReader(new StringReader(data), true, ','))
+			{
+				csv.CustomBooleanReplacer = new Dictionary<string, bool> {{"N", false}, {"Y", true}};
+				csv.MissingFieldAction = MissingFieldAction.ReplaceByNull;
+				IDataReader reader = csv;
+
+				reader.Read().Should().BeTrue();
+				reader.GetString(0).Should().Be("data");
+				reader.GetBoolean(1).Should().BeFalse();
+
+				reader.Read().Should().BeTrue();
+				reader.GetString(0).Should().Be("test");
+				reader.GetBoolean(1).Should().BeTrue();
+				
+				reader.Read().Should().BeFalse();
 			}
 		}
 
@@ -695,7 +760,7 @@ namespace CsvReader.UnitTests
 			{
 				IDataReader reader = csv;
 
-				string[] values = new string[CsvReaderSampleData.SampleData1RecordCount];
+				string[] values = new string[CsvReaderSampleData.SampleData1FieldCount];
 
 				while (reader.Read())
 				{
@@ -721,12 +786,12 @@ namespace CsvReader.UnitTests
 			{
 				IDataReader reader = csv;
 
-				object[] objValues = new object[CsvReaderSampleData.SampleData1RecordCount];
-				string[] values = new string[CsvReaderSampleData.SampleData1RecordCount];
+				object[] objValues = new object[CsvReaderSampleData.SampleData1FieldCount];
+				string[] values = new string[CsvReaderSampleData.SampleData1FieldCount];
 
 				while (reader.Read())
 				{
-					Assert.AreEqual(CsvReaderSampleData.SampleData1RecordCount, reader.GetValues(objValues));
+					Assert.AreEqual(CsvReaderSampleData.SampleData1FieldCount, reader.GetValues(objValues));
 
 					for (int i = 0; i < reader.FieldCount; i++)
 					{
@@ -779,7 +844,7 @@ namespace CsvReader.UnitTests
 			{
 				IDataReader reader = csv;
 
-				Assert.AreEqual(CsvReaderSampleData.SampleData1RecordCount, reader.FieldCount);
+				Assert.AreEqual(CsvReaderSampleData.SampleData1FieldCount, reader.FieldCount);
 			}
 		}
 
@@ -790,7 +855,7 @@ namespace CsvReader.UnitTests
 			{
 				IDataReader reader = csv;
 
-				string[] values = new string[CsvReaderSampleData.SampleData1RecordCount];
+				string[] values = new string[CsvReaderSampleData.SampleData1FieldCount];
 
 				while (reader.Read())
 				{
@@ -800,6 +865,7 @@ namespace CsvReader.UnitTests
 					values[3] = (string) reader[CsvReaderSampleData.SampleData1Header3];
 					values[4] = (string) reader[CsvReaderSampleData.SampleData1Header4];
 					values[5] = (string) reader[CsvReaderSampleData.SampleData1Header5];
+					values[6] = (string) reader[CsvReaderSampleData.SampleData1Header6];
 
 					CsvReaderSampleData.CheckSampleData1(csv.HasHeaders, csv.CurrentRecordIndex, values);
 				}
@@ -813,7 +879,7 @@ namespace CsvReader.UnitTests
 			{
 				IDataReader reader = csv;
 
-				string[] values = new string[CsvReaderSampleData.SampleData1RecordCount];
+				string[] values = new string[CsvReaderSampleData.SampleData1FieldCount];
 
 				while (reader.Read())
 				{
@@ -825,11 +891,89 @@ namespace CsvReader.UnitTests
 			}
 		}
 
+		[Test]
+		public void SqlBulkCopyTest()
+		{
+			// arrange
+            var actual = new List<SampleData1>();
+            var dbFile = Path.Combine(Directory.GetCurrentDirectory(), "csvtest.mdf");
+			using (var connection = new SqlConnection($"Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename={dbFile};Integrated Security=True;Connect Timeout=30"))
+            {
+                connection.Open();
+                var command = new SqlCommand("TRUNCATE TABLE [dbo].[SampleData1]", connection);
+                command.ExecuteNonQuery();
+
+				using (var csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), true))
+                {
+                    var sqlBulkCopy = new SqlBulkCopy(connection);
+                    sqlBulkCopy.DestinationTableName = "[dbo].[SampleData1]";
+                    csv.SkipEmptyLines = true;
+                    csv.CustomBooleanReplacer = new Dictionary<string, bool> {{"Y", true}, {"N", false}};
+                    csv.MissingFieldAction = MissingFieldAction.ReplaceByNull;
+                    IDataReader reader = csv;
+
+                    csv.Columns = new ColumnCollection
+                    {
+                        {"First Name", typeof(string)},
+                        {"Last Name", typeof(string)},
+                        {"Address", typeof(string)},
+                        {"City", typeof(string)},
+                        {"State", typeof(string)},
+                        {"Zip Code", typeof(string)},
+                        {"IsActive", typeof(bool)},
+                    };
+
+					sqlBulkCopy.ColumnMappings.Add("First Name", "FirstName");
+                    sqlBulkCopy.ColumnMappings.Add("Last Name", "LastName");
+				    sqlBulkCopy.ColumnMappings.Add("Address", "Address");
+				    sqlBulkCopy.ColumnMappings.Add("City", "City");
+                    sqlBulkCopy.ColumnMappings.Add("State", "State");
+                    sqlBulkCopy.ColumnMappings.Add("Zip Code", "ZipCode");
+				    sqlBulkCopy.ColumnMappings.Add("IsActive", "IsActive");
+				    sqlBulkCopy.WriteToServer(reader);
+                }
+
+                command = new SqlCommand("SELECT [FirstName], [LastName], [Address], [City], [State], [ZipCode], [IsActive] FROM [dbo].[SampleData1]", connection);
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var firstName = reader.GetSqlString(reader.GetOrdinal("FirstName"));
+                        var lastName = reader.GetSqlString(reader.GetOrdinal("LastName"));
+                        var address = reader.GetSqlString(reader.GetOrdinal("Address"));
+                        var city = reader.GetSqlString(reader.GetOrdinal("City"));
+                        var state = reader.GetSqlString(reader.GetOrdinal("State"));
+                        var zipCode = reader.GetSqlString(reader.GetOrdinal("ZipCode"));
+                        var isActive = reader.GetSqlBoolean(reader.GetOrdinal("IsActive"));
+                        var sampleData = new SampleData1(firstName.IsNull ? null : firstName.Value,
+                            lastName.IsNull ? null : lastName.Value,
+                            address.IsNull ? null : address.Value,
+                            city.IsNull ? null : city.Value,
+                            state.IsNull ? null : state.Value,
+                            zipCode.IsNull ? null : zipCode.Value,
+                            isActive.IsNull ? (bool?) null : isActive.Value);
+						actual.Add(sampleData);
+                    }
+                }
+            }
+
+			// assert
+            actual.Should().BeEquivalentTo(new List<SampleData1>
+            {
+                new SampleData1("John", "Doe", "120 jefferson st.", "Riverside", "NJ", "08075", true),
+                new SampleData1("Jack", "McGinnis", "220 hobo Av.", "Phila", "PA", "09119", false),
+                new SampleData1("John \"Da Man\"", "Repici", "120 Jefferson St.", "Riverside", "NJ", "08075", null),
+                new SampleData1("Stephen", "Tyler", "7452 Terrace \"At the Plaza\" road", "SomeTown", "SD", "91234", null),
+                new SampleData1(null, "Blankman", null, "SomeTown", "SD", "00298", null),
+                new SampleData1("Joan \"the bone\", Anne", "Jet", "9th, at Terrace plc", "Desert City", "CO", "00123", null),
+            }, o => o.IncludingAllDeclaredProperties());
+		}
+
 		#endregion
 
-        private class SampleData1
+		private class SampleData1
         {
-            public SampleData1(string firstName, string lastName, string address, string city, string state, string zipCode)
+            public SampleData1(string firstName, string lastName, string address, string city, string state, string zipCode, bool? isActive)
             {
                 FirstName = firstName;
                 LastName = lastName;
@@ -837,6 +981,7 @@ namespace CsvReader.UnitTests
                 City = city;
                 State = state;
                 ZipCode = zipCode;
+                IsActive = isActive;
             }
 
             public string FirstName { get; set; }
@@ -845,6 +990,7 @@ namespace CsvReader.UnitTests
             public string City { get; set; }
             public string State { get; set; }
             public string ZipCode { get; set; }
+            public bool? IsActive { get; set; }
         }
 
         private class SampleData2

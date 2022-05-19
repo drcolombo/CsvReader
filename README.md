@@ -108,6 +108,17 @@ Below is a example using the Columns collection to set up the correct metadata f
 				new LumenWorks.Framework.IO.Csv.Column { Name = "LowPrice", Type = typeof(decimal) },
 				new LumenWorks.Framework.IO.Csv.Column { Name = "ClosePrice", Type = typeof(decimal) },
 				new LumenWorks.Framework.IO.Csv.Column { Name = "Volume", Type = typeof(int) },
+				new LumenWorks.Framework.IO.Csv.Column { Name = "IsActive", Type = typeof(bool) },
+			};
+
+			// With the help of CustomBooleanReplacer you can define a mapping between string values in the CSV file and boolean values
+			// In this example, 'Y' and 'Yes' will be treated as true; 'N' and 'No' - as false value.
+			reader.CustomBooleanReplacer = new Dictionary<string, bool>
+			{
+				{"Y", true},
+				{"N", false},
+				{"Yes", true},
+				{"No", false},
 			};
 
 			// Now use SQL Bulk Copy to move the data
@@ -122,6 +133,7 @@ Below is a example using the Columns collection to set up the correct metadata f
 				sbc.AddColumnMapping("LowPrice", "LowPrice");
 				sbc.AddColumnMapping("ClosePrice", "ClosePrice");
 				sbc.AddColumnMapping("Volume", "Volume");
+				sbc.AddColumnMapping("IsActive", "IsActive");
 
 				sbc.WriteToServer(reader);
 			}
@@ -130,24 +142,24 @@ Below is a example using the Columns collection to set up the correct metadata f
 ```
 The method AddColumnMapping is an extension I wrote to simplify adding mappings to SBC
 ```csharp
-    public static class SqlBulkCopyExtensions
-    {
-        public static SqlBulkCopyColumnMapping AddColumnMapping(this SqlBulkCopy sbc, int sourceColumnOrdinal, int targetColumnOrdinal)
-        {
-            var map = new SqlBulkCopyColumnMapping(sourceColumnOrdinal, targetColumnOrdinal);
-            sbc.ColumnMappings.Add(map);
+	public static class SqlBulkCopyExtensions
+	{
+		public static SqlBulkCopyColumnMapping AddColumnMapping(this SqlBulkCopy sbc, int sourceColumnOrdinal, int targetColumnOrdinal)
+		{
+			var map = new SqlBulkCopyColumnMapping(sourceColumnOrdinal, targetColumnOrdinal);
+			sbc.ColumnMappings.Add(map);
 
-            return map;
-        }
+			return map;
+		}
 
-        public static SqlBulkCopyColumnMapping AddColumnMapping(this SqlBulkCopy sbc, string sourceColumn, string targetColumn)
-        {
-            var map = new SqlBulkCopyColumnMapping(sourceColumn, targetColumn);
-            sbc.ColumnMappings.Add(map);
+		public static SqlBulkCopyColumnMapping AddColumnMapping(this SqlBulkCopy sbc, string sourceColumn, string targetColumn)
+		{
+			var map = new SqlBulkCopyColumnMapping(sourceColumn, targetColumn);
+			sbc.ColumnMappings.Add(map);
 
-            return map;
-        }
-    }
+			return map;
+		}
+	}
 ```	
 One other issue recently arose where we wanted to use SBC but some of the data was not in the file itself, but metadata that needed to be included on every row. The solution was to amend the CSV reader and Columns collection to allow default values to be provided that are not in the data.
 
@@ -159,14 +171,14 @@ The additional columns should be added at the end of the Columns collection to a
 		{
 			reader.Columns = new List<LumenWorks.Framework.IO.Csv.Column>
 			{
-			    ...
+				...
 				new LumenWorks.Framework.IO.Csv.Column { Name = "Volume", Type = typeof(int) },
 				// NB Fake column so bulk import works
-                new LumenWorks.Framework.IO.Csv.Column { Name = "Ticker", Type = typeof(string) },
+				new LumenWorks.Framework.IO.Csv.Column { Name = "Ticker", Type = typeof(string) },
 			};
 
 			// Fix up the column defaults with the values we need
-            reader.UseColumnDefaults = true;
+			reader.UseColumnDefaults = true;
 			reader.Columns[reader.GetFieldIndex("Ticker")] = Path.GetFileNameWithoutExtension(fileName);
 
 			// Now use SQL Bulk Copy to move the data

@@ -71,7 +71,6 @@ namespace CsvReader
             {
                 // used for Comparing not Formatting/Parsing
                 Debug.Assert(null != _culture, "null culture");
-                Debug.Assert(_cultureUserSet || _culture.Equals(Locale), "Locale mismatch");
                 return _culture;
             }
             set

@@ -24,6 +24,8 @@
 
 
 using System;
+using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Text;
 using CsvReader.Exceptions;
@@ -1237,7 +1239,7 @@ namespace CsvReader.UnitTests
                 var headers = csv.GetFieldHeaders();
 
                 Assert.IsNotNull(headers);
-                Assert.AreEqual(CsvReaderSampleData.SampleData1RecordCount, headers.Length);
+                Assert.AreEqual(CsvReaderSampleData.SampleData1FieldCount, headers.Length);
 
                 Assert.AreEqual(CsvReaderSampleData.SampleData1Header0, headers[0]);
                 Assert.AreEqual(CsvReaderSampleData.SampleData1Header1, headers[1]);
@@ -1245,6 +1247,7 @@ namespace CsvReader.UnitTests
                 Assert.AreEqual(CsvReaderSampleData.SampleData1Header3, headers[3]);
                 Assert.AreEqual(CsvReaderSampleData.SampleData1Header4, headers[4]);
                 Assert.AreEqual(CsvReaderSampleData.SampleData1Header5, headers[5]);
+                Assert.AreEqual(CsvReaderSampleData.SampleData1Header6, headers[6]);
 
                 Assert.AreEqual(0, csv.GetFieldIndex(CsvReaderSampleData.SampleData1Header0));
                 Assert.AreEqual(1, csv.GetFieldIndex(CsvReaderSampleData.SampleData1Header1));
@@ -1252,6 +1255,7 @@ namespace CsvReader.UnitTests
                 Assert.AreEqual(3, csv.GetFieldIndex(CsvReaderSampleData.SampleData1Header3));
                 Assert.AreEqual(4, csv.GetFieldIndex(CsvReaderSampleData.SampleData1Header4));
                 Assert.AreEqual(5, csv.GetFieldIndex(CsvReaderSampleData.SampleData1Header5));
+                Assert.AreEqual(6, csv.GetFieldIndex(CsvReaderSampleData.SampleData1Header6));
             }
         }
 

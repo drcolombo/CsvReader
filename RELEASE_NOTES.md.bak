@@ -1,4 +1,4 @@
-#### 4.3.0 (2022-05-19)
+#### 4.2.2 (2022-05-19)
 * Fixed a crash when a developer wants to see the content of the Columns property during debugging
 * Added CustomBooleanReplacer to define a mapping for boolean values
 

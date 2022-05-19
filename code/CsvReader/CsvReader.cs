@@ -228,6 +228,8 @@ namespace CsvReader
         /// </summary>
         private char _newLineDelimiter;
 
+        public Dictionary<string, bool> CustomBooleanReplacer = null;
+
         /// <summary>
         /// Initializes a new instance of the CsvReader class.
         /// </summary>
@@ -349,7 +351,7 @@ namespace CsvReader
         ///		<paramref name="bufferSize"/> must be 1 or more.
         /// </exception>
         public CsvReader(TextReader reader, bool hasHeaders, char delimiter, char quote, char escape, char comment,
-            ValueTrimmingOptions trimmingOptions, int bufferSize, string nullValue = null, char newLineDelimiter = DefaultNewLineDelimiter)
+            ValueTrimmingOptions trimmingOptions, int bufferSize, string nullValue = null, char newLineDelimiter = DefaultNewLineDelimiter, Dictionary<string, bool> customBooleanReplacer = null)
         {
 #if DEBUG
             _allocStack = new System.Diagnostics.StackTrace();
@@ -1542,10 +1544,10 @@ namespace CsvReader
                                 Type = typeof(string)
                             };
 
-                            _fieldHeaderIndexes.Add(headerName, i);
                             // Should be correct as we are going in ascending order.
                             Columns.Add(col);
                         }
+                        _fieldHeaderIndexes.Add(headerName, i);
                     }
 
                     // Proceed to first record
@@ -1928,6 +1930,18 @@ namespace CsvReader
             return length;
         }
 
+        private bool? GetCustomBooleanValue(string value)
+        {
+            var key = CustomBooleanReplacer.Keys.SingleOrDefault(x =>
+                string.Equals(x, value, StringComparison.CurrentCultureIgnoreCase));
+            if (key != null)
+            {
+                return CustomBooleanReplacer[key];
+            }
+
+            return null;
+        }
+
         int IDataReader.RecordsAffected =>
             // For SELECT statements, -1 must be returned.
             -1;
@@ -2173,7 +2187,11 @@ namespace CsvReader
             int result;
 
             if (int.TryParse(value, out result)) return result != 0;
-
+            if (CustomBooleanReplacer != null)
+            {
+                var boolValue = GetCustomBooleanValue(value);
+                if (boolValue.HasValue) return boolValue.Value;
+            }
             return bool.Parse(value);
         }
 
@@ -2252,6 +2270,12 @@ namespace CsvReader
             var value = this[i];
             if (Columns == null) return value;
             var column = Columns[i];
+
+            if (Columns[i].Type == typeof(bool) && CustomBooleanReplacer != null)
+            {
+                return GetCustomBooleanValue(value);
+            }
+
             return column.Convert(value);
         }
 

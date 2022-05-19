@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>LumenWorksCsvReader2</id>
-    <version>4.2.1</version>
+    <version>4.3.0</version>
     <title>LumenWorks CSV Reader 2</title>
     <authors>Sébastien Lorion, Paul Hatcher, Maxim Ivanov</authors>
     <owners>Maxim Ivanov</owners>
@@ -12,10 +12,10 @@
     <repository type="github" url="https://github.com/drcolombo/CsvReader" />
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>An extended version of LumenWorksCsvReader</description>
-    <releaseNotes>Removed support of .NET Framework 4.5
-Added support of .NET Framework 4.7.2, 4.8, .NET 5 and .NET 6
+    <releaseNotes>Fixed a crash when a developer wants to see the content of the Columns property during debugging
+	Added CustomBooleanReplacer to define a mapping for boolean values
 	</releaseNotes>
-    <copyright>Copyright © 2005 Sébastien Lorion, 2014 Paul Hatcher, 2020 Maxim Ivanov</copyright>
+    <copyright>Copyright © 2005 Sébastien Lorion, 2014 Paul Hatcher, 2020-2022 Maxim Ivanov</copyright>
     <tags>CSV cvs-reader</tags>
     <dependencies>
       <group targetFramework=".NETFramework4.7.2" />

@@ -1,5 +1,5 @@
 //	LumenWorks.Framework.Tests.Unit.IO.CSV.CsvReaderSampleData
-//	Copyright (c) 2005 Sébastien Lorion
+//	Copyright (c) 2005 SÃ©bastien Lorion
 //
 //	MIT license (http://en.wikipedia.org/wiki/MIT_License)
 //
@@ -29,7 +29,7 @@ namespace CsvReader.UnitTests
 		#region Sample data
 
 		public const int SampleData1RecordCount = 6;
-		public const int SampleData1FieldCount = 6;
+		public const int SampleData1FieldCount = 7;
 
 		public const string SampleData1Header0 = "First Name";
 		public const string SampleData1Header1 = "Last Name";
@@ -37,6 +37,7 @@ namespace CsvReader.UnitTests
 		public const string SampleData1Header3 = "City";
 		public const string SampleData1Header4 = "State";
 		public const string SampleData1Header5 = "Zip Code";
+		public const string SampleData1Header6 = "IsActive";
 
 		// <blank>
 		// # This is a comment
@@ -52,15 +53,15 @@ namespace CsvReader.UnitTests
 
 		public const string SampleData1 = @"
 # This is a comment
-""First Name"", ""Last Name"", Address, City, State, ""Zip Code""	
-John,Doe,120 jefferson st.,Riverside, NJ, 08075
-Jack,McGinnis,220 hobo Av.,Phila	, PA,09119
-""John """"Da Man"""""",Repici,120 Jefferson St.,Riverside, NJ,08075
+""First Name"", ""Last Name"", Address, City, State, ""Zip Code"", IsActive	
+John,Doe,120 jefferson st.,Riverside, NJ, 08075, Y
+Jack,McGinnis,220 hobo Av.,Phila	, PA,09119, N
+""John """"Da Man"""""",Repici,120 Jefferson St.,Riverside, NJ,08075, N/A
 
 # This is a comment
-Stephen,Tyler,""7452 Terrace """"At the Plaza"""" road"",SomeTown,SD, 91234
-,Blankman,,SomeTown, SD, 00298
-""Joan """"the bone"""", Anne"",Jet,""9th, at Terrace plc"",Desert City,CO,00123";
+Stephen,Tyler,""7452 Terrace """"At the Plaza"""" road"",SomeTown,SD, 91234,
+,Blankman,,SomeTown, SD, 00298,
+""Joan """"the bone"""", Anne"",Jet,""9th, at Terrace plc"",Desert City,CO,00123,";
 
 		public const string SampleTypedData1 = @"
 System.Boolean,System.DateTime,System.Single,System.Double,System.Decimal,System.SByte,System.Int16,System.Int32,System.Int64,System.Byte,System.UInt16,System.UInt32,System.UInt64,System.Char,System.String,System.Guid,System.DBNull,System.DBNullWithNullValue
@@ -89,6 +90,7 @@ System.Boolean,System.DateTime,System.Single,System.Double,System.Decimal,System
 					Assert.AreEqual(3, csv.GetFieldIndex(SampleData1Header3));
 					Assert.AreEqual(4, csv.GetFieldIndex(SampleData1Header4));
 					Assert.AreEqual(5, csv.GetFieldIndex(SampleData1Header5));
+					Assert.AreEqual(6, csv.GetFieldIndex(SampleData1Header6));
 				}
 				
 				Assert.AreEqual(-1, csv.CurrentRecordIndex);
@@ -112,7 +114,7 @@ System.Boolean,System.DateTime,System.Single,System.Double,System.Decimal,System
 
 		public static void CheckSampleData1(long recordIndex, CsvReader csv)
 		{
-			string[] fields = new string[6];
+			string[] fields = new string[7];
 			csv.CopyCurrentRecordTo(fields);
 
 			CheckSampleData1(csv.HasHeaders, recordIndex, fields, 0);
@@ -141,6 +143,7 @@ System.Boolean,System.DateTime,System.Single,System.Double,System.Decimal,System
 					Assert.AreEqual(SampleData1Header3, fields[startIndex + 3]);
 					Assert.AreEqual(SampleData1Header4, fields[startIndex + 4]);
 					Assert.AreEqual(SampleData1Header5, fields[startIndex + 5]);
+					Assert.AreEqual(SampleData1Header6, fields[startIndex + 6]);
 					break;
 
 				case 1:
@@ -150,6 +153,7 @@ System.Boolean,System.DateTime,System.Single,System.Double,System.Decimal,System
 					Assert.AreEqual("Riverside", fields[startIndex + 3]);
 					Assert.AreEqual("NJ", fields[startIndex + 4]);
 					Assert.AreEqual("08075", fields[startIndex + 5]);
+					Assert.AreEqual("Y", fields[startIndex + 6]);
 					break;
 
 				case 2:
@@ -159,6 +163,7 @@ System.Boolean,System.DateTime,System.Single,System.Double,System.Decimal,System
 					Assert.AreEqual("Phila", fields[startIndex + 3]);
 					Assert.AreEqual("PA", fields[startIndex + 4]);
 					Assert.AreEqual("09119", fields[startIndex + 5]);
+					Assert.AreEqual("N", fields[startIndex + 6]);
 					break;
 
 				case 3:
@@ -168,6 +173,7 @@ System.Boolean,System.DateTime,System.Single,System.Double,System.Decimal,System
 					Assert.AreEqual("Riverside", fields[startIndex + 3]);
 					Assert.AreEqual("NJ", fields[startIndex + 4]);
 					Assert.AreEqual("08075", fields[startIndex + 5]);
+					Assert.AreEqual("N/A", fields[startIndex + 6]);
 					break;
 
 				case 4:
@@ -177,6 +183,7 @@ System.Boolean,System.DateTime,System.Single,System.Double,System.Decimal,System
 					Assert.AreEqual("SomeTown", fields[startIndex + 3]);
 					Assert.AreEqual("SD", fields[startIndex + 4]);
 					Assert.AreEqual("91234", fields[startIndex + 5]);
+                    Assert.AreEqual("", fields[startIndex + 6]);
 					break;
 
 				case 5:
@@ -186,6 +193,7 @@ System.Boolean,System.DateTime,System.Single,System.Double,System.Decimal,System
 					Assert.AreEqual("SomeTown", fields[startIndex + 3]);
 					Assert.AreEqual("SD", fields[startIndex + 4]);
 					Assert.AreEqual("00298", fields[startIndex + 5]);
+                    Assert.AreEqual("", fields[startIndex + 6]);
 					break;
 
 				case 6:
@@ -195,6 +203,7 @@ System.Boolean,System.DateTime,System.Single,System.Double,System.Decimal,System
 					Assert.AreEqual("Desert City", fields[startIndex + 3]);
 					Assert.AreEqual("CO", fields[startIndex + 4]);
 					Assert.AreEqual("00123", fields[startIndex + 5]);
+                    Assert.AreEqual("", fields[startIndex + 6]);
 					break;
 
 				default:

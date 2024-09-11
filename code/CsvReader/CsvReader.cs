@@ -1,5 +1,5 @@
 //	LumenWorks.Framework.IO.CSV.CsvReader
-//	Copyright (c) 2005 Sébastien Lorion
+//	Copyright (c) 2005 SÃ©bastien Lorion
 //
 //	MIT license (http://en.wikipedia.org/wiki/MIT_License)
 //
@@ -837,6 +837,197 @@ namespace CsvReader
                 return new string(_buffer, 0, _bufferLength);
             else
                 return string.Empty;
+        }
+
+                /// <summary>
+        /// Maps DataReader to business entity/dto
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="reader"></param>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> MapDataToDto<T>(this IDataReader reader, Func<IDataReader, bool> filter = null) where T : new()
+        {
+            PropertyInfo[] properties = typeof (T).GetProperties().Where(p => p.CanWrite).ToArray();
+            var schemaTable = reader.GetSchemaTable();
+            if (schemaTable == null) yield break;
+            int columnNameOrdinal = schemaTable.Columns["ColumnName"].Ordinal; // CsvReader doesn't place the "ColumnName" column at ordinal zero
+            var columnList = (schemaTable.Select()).Select(r => r.ItemArray[columnNameOrdinal].ToString()).ToList();
+
+            while (reader.Read())
+            {
+                if (filter != null)
+                {
+                    if (!filter(reader))
+                    {
+                        continue;
+                    }
+                }
+
+                var element = Activator.CreateInstance<T>();
+                reader.MapDataToDto(element, properties, columnList);
+                yield return element;
+            }
+        }
+
+        /// <summary>
+        ///     Maps first IDataReader entry to entity/dto
+        /// </summary>
+        /// <param name="reader">
+        ///     The <see cref="IDataReader"/> to use.
+        /// </param>
+        /// <param name="instance">
+        ///     The instance to map the data to.
+        /// </param>
+        /// <param name="properties">
+        ///     The cached <see cref="PropertyInfo"/> array of the instance.
+        /// </param>
+        /// <param name="columnList">
+        ///     Cached column list of the <see cref="IDataReader"/>.
+        /// </param>
+        private static bool MapDataToDto<T>(this IDataReader reader, T instance, PropertyInfo[] properties, IList<string> columnList)
+        {
+            if (properties == null)
+            {
+                properties = typeof(T).GetProperties().OrderBy(p =>
+                {
+                    // sadly, we have some property setters which interact with each other to we need to be able to control the order in which they're invoked
+                    DataMemberAttribute dataMemberAttribute = (DataMemberAttribute)p.GetCustomAttributes(typeof(DataMemberAttribute), true).FirstOrDefault();
+                    return dataMemberAttribute == null ? -1 : dataMemberAttribute.Order;
+                }).ToArray();
+            }
+
+            // if cached column list has not been passed. Create from schema table
+            if (columnList == null)
+            {
+                DataTable schemaTable = reader.GetSchemaTable();
+
+                // if not available quit
+                if (schemaTable == null)
+                {
+                    return false;
+                }
+
+                columnList = (schemaTable.Select()).Select(r => r.ItemArray[0].ToString()).ToList();
+            }
+
+            foreach (var f in properties)
+            {
+                var fn = f.Name;
+                // ignore property if it's not in the columnlist or if it doesn't have a setter
+                if (!columnList.Contains(f.Name, StringComparer.InvariantCultureIgnoreCase) || !f.CanWrite)
+                {
+                    continue;
+                }
+
+                var columnName = f.Name;
+                var o = reader[columnName];
+
+                if (o.GetType() != typeof (DBNull))
+                {
+                    if (f.PropertyType.IsEnum)
+                    {
+                        if (f.PropertyType.GetEnumUnderlyingType() == o.GetType().UnderlyingSystemType)
+                        {
+                            f.SetValue(instance, o, null);
+                            continue;
+                        }
+
+                        if (f.PropertyType.GetEnumUnderlyingType() == typeof(int) && o.GetType().UnderlyingSystemType == typeof(string))
+                        {
+                            var enumNames = EnumExtensions.GetCustomEnumNames(f.PropertyType);
+                            var enumValue = enumNames.Where(x => string.Equals(x.Value, o.ToString(), StringComparison.InvariantCultureIgnoreCase));
+                            if (enumValue.Any())
+                            {
+                                f.SetValue(instance, enumValue.First().Key, null);
+                                continue;
+                            }
+                        }
+                    }
+                    if (f.PropertyType == typeof(XDocument) && o.GetType() == typeof(string))
+                    {
+                        f.SetValue(instance, XDocument.Parse(o.ToString()));
+                        continue;
+                    }
+
+                    try
+                    {
+                        f.SetValue(instance, ChangeType(o, f.PropertyType), null);
+                    }
+                    catch (Exception ex)
+                    {
+                        // ReSharper disable once PossibleIntendedRethrow
+                        // do not remove that - it's useful for debugging purposes
+                        throw ex;
+                    }
+                    
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        ///     Maps first IDataReader entry to entity/dto
+        /// </summary>
+        /// <param name="reader">
+        ///     The <see cref="IDataReader"/> to use.
+        /// </param>
+        /// <param name="entityType"></param>
+        /// <param name="instance">
+        ///     The instance to map the data to.
+        /// </param>
+        /// <param name="properties">
+        ///     The cached <see cref="PropertyInfo"/> array of the instance.
+        /// </param>
+        /// <param name="columnList">
+        ///     Cached column list of the <see cref="IDataReader"/>.
+        /// </param>
+        private static bool MapDataToDto(this IDataReader reader, Type entityType, object instance, PropertyInfo[] properties, IList<string> columnList)
+        {
+            if (properties == null)
+            {
+                properties = entityType.GetProperties();
+            }
+
+            // if cached column list has not been passed. Create from schema table
+            if (columnList == null)
+            {
+                DataTable schemaTable = reader.GetSchemaTable();
+
+                // if not available quit
+                if (schemaTable == null)
+                {
+                    return false;
+                }
+
+                columnList = (schemaTable.Select()).Select(r => r.ItemArray[0].ToString()).ToList();
+            }
+
+            foreach (var f in properties)
+            {
+                // ignore property if it's not in the columnlist or if it doesn't have a setter
+                if (!columnList.Contains(f.Name, StringComparer.InvariantCultureIgnoreCase) || !f.CanWrite)
+                {
+                    continue;
+                }
+
+                var columnName = f.Name;
+                var o = reader[columnName];
+
+                if (o.GetType() != typeof (DBNull))
+                {
+                    if (f.PropertyType.IsEnum && f.PropertyType.GetEnumUnderlyingType() == o.GetType().UnderlyingSystemType)
+                    {
+                        f.SetValue(instance, o, null);
+                        continue;
+                    }
+
+                    f.SetValue(instance, ChangeType(o, f.PropertyType), null);
+                }
+            }
+
+            return true;
         }
 
         /// <summary>

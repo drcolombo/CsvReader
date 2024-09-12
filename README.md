@@ -299,7 +299,7 @@ Regex                  |22.5506|44.6435|45.5831|49.3559
 
 
 
-|Average of all test passes|.NET 4.8|.NET Core 3.1|.NET 5|.NET 6|
+|Average of all test passes|.NET 4.8|.NET 6|.NET 7|.NET 8|
 |---|---|---|---|---|---|
 CsvReader - No cache   |716.483|928.803|915.854|950.610
 CachedCsvReader - Run 1|313.540|377.821|417.103|441.491

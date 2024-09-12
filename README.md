@@ -249,64 +249,64 @@ Before calling this method you should define Columns passing names and data type
 ```
 
 ## Performance
-To give an idea of performance, this took a naive sample app using an ORM from 2m 27s to 1.37s using SBC and the full import took just over 11m to import 9.8m records.
+To give an idea of performance, this took a native sample app using an ORM from 2m 27s to 1.37s using SBC and the full import took just over 11m to import 9.8m records.
 
 One of the main reasons for using this library is its excellent performance on reading/parsing raw data, here's a recent run of the benchmark (which is in the source)
 
-|Test|.NET 4.7.2|.NET 4.8|.NET Core 3.1|.NET 5|.NET 6|
-|---|---|---|---|---|---|
+|Test|.NET 4.8|.NET 6|.NET 7|.NET 8|
+|---|---|---|---|---|
 Test pass #1 - All fields|
-CsvReader - No cache   |18.029|17.4115|18.6588|20.9881|19.8229
-CachedCsvReader - Run 1|15.8878|15.6856|16.4155|19.478|19.2338
-CachedCsvReader - Run 2|103700.2121|100227.7904|119402.9851|102923.9766|119532.7357
-TextFieldParser        |10.6325|10.7448|11.3845|13.3976|13.4799
-Regex                  |11.0006|11.2566|11.603|16.8422|16.6653
-|||||||
+CsvReader - No cache   |62.7333|80.1117|63.8059|37.0477
+CachedCsvReader - Run 1|35.5160|41.7880|38.2042|39.8874
+CachedCsvReader - Run 2|61426.7765|73999.3273|117302.0528|91973.2441
+TextFieldParser        |9.8574|13.9199|14.6264|16.4390
+Regex                  |10.2663|17.9696|18.1544|20.7676
+||||||
 Test pass #1 - Field #72 (middle)|
-CsvReader - No cache   |33.8842|34.4039|34.5182|48.3443|47.2414
-CachedCsvReader - Run 1|20.0675|20.0483|21.5359|24.4861|24.2664
-CachedCsvReader - Run 2|1647940.075|1325301.205|1050119.332|1148825.065|1170212.766
-TextFieldParser        |10.5588|10.8054|11.5507|13.6496|13.9692
-Regex                  |23.8385|24.2478|25.6357|40.7933|40.2386
-|||||||
+CsvReader - No cache   |67.7263|95.0044|86.0328|87.4732
+CachedCsvReader - Run 1|29.2253|36.9564|42.5468|44.7421
+CachedCsvReader - Run 2|792792.7928|646108.6637|512820.5128|639534.8837
+TextFieldParser        |9.9626|13.1838|14.5921|18.2339
+Regex                  |22.5060|37.9651|46.1343|50.7253
+||||||
 Test pass #2 - All fields|
-CsvReader - No cache   |23.7762|24.7155|24.7757|29.4928|29.2318
-CachedCsvReader - Run 1|15.4433|15.4299|16.2404|19.0609|18.7912
-CachedCsvReader - Run 2|1325301.205|1506849.315|1100000|1242937.853|1428571.429
-TextFieldParser        |9.4764|10.7936|11.583|13.7241|14.1607
-Regex                  |9.8131|11.3284|11.8905|17.1912|17.816
-|||||||
+CsvReader - No cache   |75.8756|88.6553|93.0768|109.0782
+CachedCsvReader - Run 1|28.8864|38.4666|45.3834|40.4266
+CachedCsvReader - Run 2|948275.8621|781527.5311|852713.1783|461699.8951
+TextFieldParser        |9.4858|13.8782|15.3555|17.4682
+Regex                  |9.6566|18.4976|20.6475|22.6479
+||||||
 Test pass #2 - Field #72 (middle)|
-CsvReader - No cache   |34.8114|34.8461|35.5218|49.8421|49.2037
-CachedCsvReader - Run 1|20.719|20.7746|21.8001|25.8437|25.2911
-CachedCsvReader - Run 2|1317365.27|1264367.816|1002277.904|1242937.853|1225626.741
-TextFieldParser        |10.3391|10.5819|11.5539|13.5875|14.1446
-Regex                  |23.8867|23.6028|25.0774|41.7542|40.7904
-|||||||
+CsvReader - No cache   |72.6275|98.7495|107.8248|111.1179
+CachedCsvReader - Run 1|28.4391|35.7626|36.8091|52.7800
+CachedCsvReader - Run 2|830188.6792|765217.3913|827067.6692|995475.1131
+TextFieldParser        |8.6734|14.6872|15.4038|18.2108
+Regex                  |22.1135|44.0567|46.4395|50.7668
+||||||
 Test pass #3 - All fields|
-CsvReader - No cache   |24.5748|24.0699|24.4865|29.4968|29.041
-CachedCsvReader - Run 1|14.6422|14.7653|16.7683|20.3806|18.0145
-CachedCsvReader - Run 2|1379310.345|1383647.799|1006864.989|1173333.333|1157894.737
-TextFieldParser        |10.7302|10.6394|11.5478|13.5921|14.2006
-Regex                  |11.0881|11.0249|11.4958|17.9792|17.6474
-|||||||
+CsvReader - No cache   |74.3428|90.2397|92.8137|111.8334
+CachedCsvReader - Run 1|30.5301|35.6446|43.8796|49.9862
+CachedCsvReader - Run 2|817843.8662|737018.4255|766550.5226|820895.5224
+TextFieldParser        |9.3366|14.4030|15.0148|17.9641
+Regex                  |10.1904|19.1660|20.0524|21.7854
+||||||
 Test pass #3 - Field #72 (middle)|
-CsvReader - No cache   |34.4315|35.0067|34.5559|50.7796|49.0471
-CachedCsvReader - Run 1|17.3084|19.1313|17.2032|21.462|23.9831
-CachedCsvReader - Run 2|1442622.951|1428571.429|1047619.048|1242937.853|1192411.924
-TextFieldParser        |10.7142|10.5523|11.5291|13.7035|14.1779
-Regex                  |23.3738|23.7406|25.1373|41.8325|41.2974
+CsvReader - No cache   |76.5840|104.5209|105.9584|113.8155
+CachedCsvReader - Run 1|35.5272|38.0744|43.4385|37.0724
+CachedCsvReader - Run 2|932203.3898|766550.5226|634005.7637|748299.3197
+TextFieldParser        |9.7928|14.4643|13.6437|17.7131
+Regex                  |22.5506|44.6435|45.5831|49.3559
 
 
 
-|Average of all test passes|.NET 4.7.2|.NET 4.8|.NET Core 3.1|.NET 5|.NET 6|
+|Average of all test passes|.NET 4.8|.NET Core 3.1|.NET 5|.NET 6|
 |---|---|---|---|---|---|
-CsvReader - No cache   |28.2512|28.4089|28.7528|38.1573|37.2647
-CachedCsvReader - Run 1|17.3447|17.6392|18.3272|21.7852|21.5967
-CachedCsvReader - Run 2|1.202.706.6762|1.168.160.8923|887.714.0429|1.025.649.3224|1.049.041.7220
-TextFieldParser        |10.4085|10.6862|11.5248|13.6091|14.0222
-Regex                  |17.1668|17.5335|18.4733|29.3988|29.0759
+CsvReader - No cache   |716.483|928.803|915.854|950.610
+CachedCsvReader - Run 1|313.540|377.821|417.103|441.491
+CachedCsvReader - Run 2|7.304.552.278|6.284.036.436|6.184.099.499|6.263.129.964
+TextFieldParser        |95.181|140.894|147.727|176.715
+Regex                  |162.139|303.831|328.352|360.082
 
-As you can see, an average performance slightly increases from full .NET Framework 4.7.2 to .NET Core 6.
+As you can see, an average performance slightly increases from full .NET Framework 4.8 to .NET Core 8.
 ![Performance Chart](AveragePerformanceChart.png)
 This was run on a Core i5-8400 (6 cores), 32Gb RAM and 2Tb SSD.

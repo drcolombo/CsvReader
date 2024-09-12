@@ -209,6 +209,45 @@ csv.ExcludeFilter = () => ((csv["Fmly"] ?? "") + (csv["Group"] ?? "") + (csv["Ty
 ```
 In this case all rows that fit the defined criteria will not be imported to the database.
 
+#### MapDataToDto<T>
+Calling this method returns you an IEnumerable<T> where T is the type of an entity/DTO you want to map your CSV file.
+Before calling this method you should define Columns passing names and data type of all columns within CSV file.
+```
+    var expected = new List<SampleData3>
+    {
+        new SampleData3("John", "Doe", "120 jefferson st.", "Riverside", "NJ", 8075, true, null),
+        new SampleData3("Jack", "McGinnis", "220 hobo Av.", "Phila", "PA", 9119, false, null),
+        new SampleData3("John \"Da Man\"", "Repici", "120 Jefferson St.", "Riverside", "NJ", 8075, false, null),
+        new SampleData3("Stephen", "Tyler", "7452 Terrace \"At the Plaza\" road", "SomeTown", "SD", 91234, false, null),
+        new SampleData3(null, "Blankman", null, "SomeTown", "SD", 298, false, null),
+        new SampleData3("Joan \"the bone\", Anne", "Jet", "9th, at Terrace plc", "Desert City", "CO", 123, false, null),
+    };
+	/// using propertyToColumnMapping parameter you can map column names from CSV file to property names of your entity/DTO
+    var propertyToColumnMapping = new Dictionary<string, string>
+    {
+        { "FirstName", "First Name" },
+        { "LastName", "Last Name" },
+        { "ZipCode", "Zip Code" }
+    };
+	using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), true))
+	{
+		/// you should define Columns before calling MapDataToDto<T>!
+        csv.Columns = new ColumnCollection
+        {
+            {"First Name", typeof(string)},
+            {"Last Name", typeof(string)},
+            {"Address", typeof(string)},
+            {"City", typeof(string)},
+            {"State", typeof(string)},
+            {"Zip Code", typeof(int)},
+            {"IsActive", typeof(bool)},
+        };
+        csv.CustomBooleanReplacer = new Dictionary<string, bool> { { "Y", true }, { "N", false } };
+        var result = csv.MapDataToDto<SampleData3>(propertyToColumnMapping).ToList();
+        result.Should().BeEquivalentTo(expected);
+	}
+```
+
 ## Performance
 To give an idea of performance, this took a naive sample app using an ORM from 2m 27s to 1.37s using SBC and the full import took just over 11m to import 9.8m records.
 

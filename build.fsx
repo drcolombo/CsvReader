@@ -1,9 +1,9 @@
 /// FAKE Build script
 
 #r "paket:
-source release/dotnetcore
+source release/dotnet
 source https://api.nuget.org/v3/index.json
-nuget FSharp.Core 6.0.3
+nuget FSharp.Core
 nuget System.AppContext prerelease
 nuget Paket.Core prerelease
 nuget Fake.Core.Target prerelease

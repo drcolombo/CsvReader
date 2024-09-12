@@ -54,6 +54,8 @@ namespace CsvReader
 
         public NumberStyles NumberStyles { get; set; }
 
+        public Func<object, object> CustomConverter { get; set; }
+
         /// <summary>
         /// Converts the value into the column type.
         /// </summary>
@@ -62,7 +64,14 @@ namespace CsvReader
         public object Convert(string value)
         {
             object x;
-            TryConvert(value, out x);           
+            if (CustomConverter != null)
+            {
+                x = CustomConverter(value);
+            }
+            else
+            {
+                TryConvert(value, out x);
+            }
 
             return x;
         }

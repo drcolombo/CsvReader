@@ -1,3 +1,7 @@
+#### 4.4.0 (2024-09-12)
+* Added MapDataToDto<T> method to map CSV file to an IEnumerable<T> where T is a type of an entity/DTO
+* Removed support of .NET Framework 4.7.2, .NET Core 3.1 and .NET 5.0. Added support of .NET 7.0 and 8.0
+
 #### 4.3.0 (2022-05-19)
 * Fixed a crash when a developer wants to see the content of the Columns property during debugging
 * Added CustomBooleanReplacer to define a mapping for boolean values

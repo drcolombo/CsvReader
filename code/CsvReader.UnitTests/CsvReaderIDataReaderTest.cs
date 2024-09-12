@@ -23,6 +23,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -47,8 +48,8 @@ namespace CsvReader.UnitTests
 
 				reader.Close();
 
-				Assert.IsTrue(reader.IsClosed);
-				Assert.IsTrue(csv.IsDisposed);
+				Assert.That(reader.IsClosed);
+				Assert.That(csv.IsDisposed);
 			}
 		}
 
@@ -62,68 +63,68 @@ namespace CsvReader.UnitTests
 				DataTable schema = reader.GetSchemaTable();
 
 			    // ReSharper disable once PossibleNullReferenceException
-				Assert.AreEqual(CsvReaderSampleData.SampleData1FieldCount, schema.Rows.Count);
+				Assert.That(schema.Rows.Count, Is.EqualTo(CsvReaderSampleData.SampleData1FieldCount));
 
 				foreach (DataColumn column in schema.Columns)
 				{
-					Assert.IsTrue(column.ReadOnly);
+					Assert.That(column.ReadOnly);
 				}
 
 				for (int index = 0; index < schema.Rows.Count; index++)
 				{
 					DataRow column = schema.Rows[index];
 
-					Assert.AreEqual(int.MaxValue, column["ColumnSize"]);
-					Assert.AreEqual(DBNull.Value, column["NumericPrecision"]);
-					Assert.AreEqual(DBNull.Value, column["NumericScale"]);
-					Assert.AreEqual(false, column["IsUnique"]);
-					Assert.AreEqual(false, column["IsKey"]);
-					Assert.AreEqual(string.Empty, column["BaseServerName"]);
-					Assert.AreEqual(string.Empty, column["BaseCatalogName"]);
-					Assert.AreEqual(string.Empty, column["BaseSchemaName"]);
-					Assert.AreEqual(string.Empty, column["BaseTableName"]);
-					Assert.AreEqual(typeof(string), column["DataType"]);
-					Assert.AreEqual(true, column["AllowDBNull"]);
-					Assert.AreEqual((int) DbType.String, column["ProviderType"]);
-					Assert.AreEqual(false, column["IsAliased"]);
-					Assert.AreEqual(false, column["IsExpression"]);
-					Assert.AreEqual(false, column["IsAutoIncrement"]);
-					Assert.AreEqual(false, column["IsRowVersion"]);
-					Assert.AreEqual(false, column["IsHidden"]);
-					Assert.AreEqual(false, column["IsLong"]);
-					Assert.AreEqual(true, column["IsReadOnly"]);
+					Assert.That(column["ColumnSize"], Is.EqualTo(int.MaxValue));
+					Assert.That(column["NumericPrecision"], Is.EqualTo(DBNull.Value));
+					Assert.That(column["NumericScale"], Is.EqualTo(DBNull.Value));
+					Assert.That(column["IsUnique"], Is.False);
+					Assert.That(column["IsKey"], Is.False);
+					Assert.That(column["BaseServerName"], Is.EqualTo(string.Empty));
+					Assert.That(column["BaseCatalogName"], Is.EqualTo(string.Empty));
+					Assert.That(column["BaseSchemaName"], Is.EqualTo(string.Empty));
+					Assert.That(column["BaseTableName"], Is.EqualTo(string.Empty));
+					Assert.That(column["DataType"], Is.EqualTo(typeof(string)));
+					Assert.That(column["AllowDBNull"], Is.True);
+					Assert.That(column["ProviderType"], Is.EqualTo((int) DbType.String));
+					Assert.That(column["IsAliased"], Is.False);
+					Assert.That(column["IsExpression"], Is.False);
+					Assert.That(column["IsAutoIncrement"], Is.False);
+					Assert.That(column["IsRowVersion"], Is.False);
+					Assert.That(column["IsHidden"], Is.False);
+					Assert.That(column["IsLong"], Is.False);
+					Assert.That(column["IsReadOnly"], Is.True);
 
-					Assert.AreEqual(index, column["ColumnOrdinal"]);
+					Assert.That(column["ColumnOrdinal"], Is.EqualTo(index));
 
 					switch (index)
 					{
 						case 0:
-							Assert.AreEqual(CsvReaderSampleData.SampleData1Header0, column["ColumnName"]);
-							Assert.AreEqual(CsvReaderSampleData.SampleData1Header0, column["BaseColumnName"]);
+							Assert.That(column["ColumnName"], Is.EqualTo(CsvReaderSampleData.SampleData1Header0));
+							Assert.That(column["BaseColumnName"], Is.EqualTo(CsvReaderSampleData.SampleData1Header0));
 							break;
 						case 1:
-							Assert.AreEqual(CsvReaderSampleData.SampleData1Header1, column["ColumnName"]);
-							Assert.AreEqual(CsvReaderSampleData.SampleData1Header1, column["BaseColumnName"]);
+							Assert.That(column["ColumnName"], Is.EqualTo(CsvReaderSampleData.SampleData1Header1));
+							Assert.That(column["BaseColumnName"], Is.EqualTo(CsvReaderSampleData.SampleData1Header1));
 							break;
 						case 2:
-							Assert.AreEqual(CsvReaderSampleData.SampleData1Header2, column["ColumnName"]);
-							Assert.AreEqual(CsvReaderSampleData.SampleData1Header2, column["BaseColumnName"]);
+							Assert.That(column["ColumnName"], Is.EqualTo(CsvReaderSampleData.SampleData1Header2));
+							Assert.That(column["BaseColumnName"], Is.EqualTo(CsvReaderSampleData.SampleData1Header2));
 							break;
 						case 3:
-							Assert.AreEqual(CsvReaderSampleData.SampleData1Header3, column["ColumnName"]);
-							Assert.AreEqual(CsvReaderSampleData.SampleData1Header3, column["BaseColumnName"]);
+							Assert.That(column["ColumnName"], Is.EqualTo(CsvReaderSampleData.SampleData1Header3));
+							Assert.That(column["BaseColumnName"], Is.EqualTo(CsvReaderSampleData.SampleData1Header3));
 							break;
 						case 4:
-							Assert.AreEqual(CsvReaderSampleData.SampleData1Header4, column["ColumnName"]);
-							Assert.AreEqual(CsvReaderSampleData.SampleData1Header4, column["BaseColumnName"]);
+							Assert.That(column["ColumnName"], Is.EqualTo(CsvReaderSampleData.SampleData1Header4));
+							Assert.That(column["BaseColumnName"], Is.EqualTo(CsvReaderSampleData.SampleData1Header4));
 							break;
 						case 5:
-							Assert.AreEqual(CsvReaderSampleData.SampleData1Header5, column["ColumnName"]);
-							Assert.AreEqual(CsvReaderSampleData.SampleData1Header5, column["BaseColumnName"]);
+							Assert.That(column["ColumnName"], Is.EqualTo(CsvReaderSampleData.SampleData1Header5));
+							Assert.That(column["BaseColumnName"], Is.EqualTo(CsvReaderSampleData.SampleData1Header5));
 							break;
 						case 6:
-							Assert.AreEqual(CsvReaderSampleData.SampleData1Header6, column["ColumnName"]);
-							Assert.AreEqual(CsvReaderSampleData.SampleData1Header6, column["BaseColumnName"]);
+							Assert.That(column["ColumnName"], Is.EqualTo(CsvReaderSampleData.SampleData1Header6));
+							Assert.That(column["BaseColumnName"], Is.EqualTo(CsvReaderSampleData.SampleData1Header6));
                             break;
 						default:
 							throw new IndexOutOfRangeException();
@@ -142,41 +143,41 @@ namespace CsvReader.UnitTests
 				DataTable schema = reader.GetSchemaTable();
 
 			    // ReSharper disable once PossibleNullReferenceException
-				Assert.AreEqual(CsvReaderSampleData.SampleData1FieldCount, schema.Rows.Count);
+				Assert.That(schema.Rows.Count, Is.EqualTo(CsvReaderSampleData.SampleData1FieldCount));
 
 				foreach (DataColumn column in schema.Columns)
 				{
-					Assert.IsTrue(column.ReadOnly);
+					Assert.That(column.ReadOnly);
 				}
 
 				for (int index = 0; index < schema.Rows.Count; index++)
 				{
 					DataRow column = schema.Rows[index];
 
-					Assert.AreEqual(int.MaxValue, column["ColumnSize"]);
-					Assert.AreEqual(DBNull.Value, column["NumericPrecision"]);
-					Assert.AreEqual(DBNull.Value, column["NumericScale"]);
-					Assert.AreEqual(false, column["IsUnique"]);
-					Assert.AreEqual(false, column["IsKey"]);
-					Assert.AreEqual(string.Empty, column["BaseServerName"]);
-					Assert.AreEqual(string.Empty, column["BaseCatalogName"]);
-					Assert.AreEqual(string.Empty, column["BaseSchemaName"]);
-					Assert.AreEqual(string.Empty, column["BaseTableName"]);
-					Assert.AreEqual(typeof(string), column["DataType"]);
-					Assert.AreEqual(true, column["AllowDBNull"]);
-					Assert.AreEqual((int) DbType.String, column["ProviderType"]);
-					Assert.AreEqual(false, column["IsAliased"]);
-					Assert.AreEqual(false, column["IsExpression"]);
-					Assert.AreEqual(false, column["IsAutoIncrement"]);
-					Assert.AreEqual(false, column["IsRowVersion"]);
-					Assert.AreEqual(false, column["IsHidden"]);
-					Assert.AreEqual(false, column["IsLong"]);
-					Assert.AreEqual(true, column["IsReadOnly"]);
+					Assert.That(column["ColumnSize"], Is.EqualTo(int.MaxValue));
+					Assert.That(column["NumericPrecision"], Is.EqualTo(DBNull.Value));
+					Assert.That(column["NumericScale"], Is.EqualTo(DBNull.Value));
+					Assert.That(column["IsUnique"], Is.EqualTo(false));
+					Assert.That(column["IsKey"], Is.EqualTo(false));
+					Assert.That(column["BaseServerName"], Is.EqualTo(string.Empty));
+					Assert.That(column["BaseCatalogName"], Is.EqualTo(string.Empty));
+					Assert.That(column["BaseSchemaName"], Is.EqualTo(string.Empty));
+					Assert.That(column["BaseTableName"], Is.EqualTo(string.Empty));
+					Assert.That(column["DataType"], Is.EqualTo(typeof(string)));
+					Assert.That(column["AllowDBNull"], Is.EqualTo(true));
+					Assert.That(column["ProviderType"], Is.EqualTo((int)DbType.String));
+					Assert.That(column["IsAliased"], Is.EqualTo(false));
+					Assert.That(column["IsExpression"], Is.EqualTo(false));
+					Assert.That(column["IsAutoIncrement"], Is.EqualTo(false));
+					Assert.That(column["IsRowVersion"], Is.EqualTo(false));
+					Assert.That(column["IsHidden"], Is.EqualTo(false));
+					Assert.That(column["IsLong"], Is.EqualTo(false));
+					Assert.That(column["IsReadOnly"], Is.EqualTo(true));
 
-					Assert.AreEqual(index, column["ColumnOrdinal"]);
+					Assert.That(column["ColumnOrdinal"], Is.EqualTo(index));
 
-					Assert.AreEqual("Column" + index.ToString(CultureInfo.InvariantCulture), column["ColumnName"]);
-					Assert.AreEqual("Column" + index.ToString(CultureInfo.InvariantCulture), column["BaseColumnName"]);
+					Assert.That(column["ColumnName"], Is.EqualTo("Column" + index.ToString(CultureInfo.InvariantCulture)));
+					Assert.That(column["BaseColumnName"], Is.EqualTo("Column" + index.ToString(CultureInfo.InvariantCulture)));
 				}
 			}
 		}
@@ -200,10 +201,10 @@ namespace CsvReader.UnitTests
 			using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), true))
 			{
 				IDataReader reader = csv;
-				Assert.IsFalse(reader.NextResult());
+				Assert.That(reader.NextResult(), Is.False);
 
 				csv.ReadNextRecord();
-				Assert.IsFalse(reader.NextResult());
+				Assert.That(reader.NextResult(), Is.False);
 			}
 		}
 
@@ -228,9 +229,9 @@ namespace CsvReader.UnitTests
 				IDataReader reader = csv;
 
 				for (int i = 0; i < CsvReaderSampleData.SampleData1RecordCount; i++)
-					Assert.IsTrue(reader.Read());
+					Assert.That(reader.Read(), Is.True);
 
-				Assert.IsFalse(reader.Read());
+				Assert.That(reader.Read(), Is.False);
 			}
 		}
 
@@ -260,7 +261,7 @@ namespace CsvReader.UnitTests
                 {
                     var isActive = reader.GetValue(6);
                     sampleData1.Add(new SampleData1(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(),
-                        reader[3].ToString(), reader[4].ToString(), reader[5].ToString(),
+                        reader[3].ToString(), reader[4].ToString(),  int.Parse(reader[5].ToString()),
                         isActive == DBNull.Value ? null : (bool?) isActive));
                 }
 			}
@@ -287,15 +288,83 @@ namespace CsvReader.UnitTests
                 {
                     var isActive = reader.GetValue(6);
                     sampleData2.Add(new SampleData1(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(),
-                        reader[3].ToString(), reader[4].ToString(), reader[5].ToString(),
+                        reader[3].ToString(), reader[4].ToString(), reader.GetInt32(5),
                         isActive == DBNull.Value ? null : (bool?)isActive));
                 }
 			}
 
             sampleData1.Should().HaveCount(6);
-            sampleData1.Should().Contain(x => x.ZipCode == "00123");
+            sampleData1.Should().Contain(x => x.ZipCode == 123);
             sampleData2.Should().HaveCount(5);
-            sampleData2.Should().NotContain(x => x.ZipCode == "00123");
+            sampleData2.Should().NotContain(x => x.ZipCode == 123);
+        }
+
+		[Test()]
+		public void ReadWithCustomParsersTest()
+        {
+            var expected = new List<SampleData3>
+            {
+                new SampleData3("John", "Doe", "120 jefferson st.", "Riverside", "NJ", 8075, true, new byte[0]),
+                new SampleData3("Jack", "McGinnis", "220 hobo Av.", "Phila", "PA", 9119, false, Convert.FromBase64String("0x01")),
+                new SampleData3("John \"Da Man\"", "Repici", "120 Jefferson St.", "Riverside", "NJ", 8075, false, null),
+            };
+            var sampleData3 = new List<SampleData3>();
+            using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData2), true))
+            {
+                csv.MissingFieldAction = MissingFieldAction.ReplaceByNull;
+                IDataReader reader = csv;
+
+                csv.Columns = new ColumnCollection
+                {
+                    {"First Name", typeof(string)},
+                    {"Last Name", typeof(string)},
+                    {"Address", typeof(string)},
+                    {"City", typeof(string)},
+                    {"State", typeof(string)},
+                    {"Zip Code", typeof(int)},
+					new Column { Name = "IsActive", Type = typeof(bool), CustomConverter = x =>
+                    {
+                        if (x == null)
+                        {
+                            return false;
+                        }
+
+                        if (string.Equals(x.ToString(), "a", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            return true;
+                        }
+
+                        return false;
+                    }},
+                    new Column
+                    {
+                        Name = "Data", Type = typeof(byte[]), CustomConverter = x =>
+                        {
+                            if (x == null)
+                            {
+                                return null;
+                            }
+                            try
+                            {
+                                return Convert.FromBase64String(x.ToString());
+                            }
+                            catch (Exception ex)
+                            {
+                                return Array.Empty<byte>();
+                            }
+                        }
+                    }
+                };
+
+				while (reader.Read())
+                {
+                    sampleData3.Add(new SampleData3(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(),
+                        reader[3].ToString(), reader[4].ToString(), reader.GetInt32(5),
+                        (bool) reader.GetValue(6), reader.GetValue(7) == DBNull.Value ? null : (byte[]) reader.GetValue(7)));
+                }
+			}
+
+            sampleData3.Should().BeEquivalentTo(expected);
         }
 
 
@@ -314,7 +383,7 @@ namespace CsvReader.UnitTests
 				while (reader.Read())
                 {
                     var item = new SampleData2(reader[0].ToString(), reader[1].ToString(), reader[2].ToString(),
-                        reader[3].ToString(), reader[4].ToString(), reader[5].ToString());
+                        reader[3].ToString(), reader[4].ToString(), reader.GetInt32(5));
 
 					item.AmountOfChildren = Convert.ToInt32(reader["AmountOfChildren"].ToString());
                     item.Sex = (Sex) Enum.Parse(typeof(Sex), reader["Sex"].ToString());
@@ -325,12 +394,12 @@ namespace CsvReader.UnitTests
 			sampleData.Should().HaveCount(6);
 			sampleData.Should().BeEquivalentTo(new List<SampleData2>
             {
-				new SampleData2("John", "Doe", "120 jefferson st.", "Riverside", "NJ", "08075") { AmountOfChildren = 1, Sex = Sex.M },
-				new SampleData2("Jack", "McGinnis", "220 hobo Av.", "Phila", "PA", "09119") { AmountOfChildren = 1, Sex = Sex.M },
-				new SampleData2("John \"Da Man\"", "Repici", "120 Jefferson St.", "Riverside", "NJ", "08075") { AmountOfChildren = 1, Sex = Sex.M },
-				new SampleData2("Stephen", "Tyler", "7452 Terrace \"At the Plaza\" road", "SomeTown", "SD", "91234") { AmountOfChildren = 1, Sex = Sex.M },
-				new SampleData2("", "Blankman", "", "SomeTown", "SD", "00298") { AmountOfChildren = 1, Sex = Sex.M },
-				new SampleData2("Joan \"the bone\", Anne", "Jet", "9th, at Terrace plc", "Desert City", "CO", "00123") { AmountOfChildren = 1, Sex = Sex.M },
+				new SampleData2("John", "Doe", "120 jefferson st.", "Riverside", "NJ", 8075) { AmountOfChildren = 1, Sex = Sex.M },
+				new SampleData2("Jack", "McGinnis", "220 hobo Av.", "Phila", "PA", 9119) { AmountOfChildren = 1, Sex = Sex.M },
+				new SampleData2("John \"Da Man\"", "Repici", "120 Jefferson St.", "Riverside", "NJ", 8075) { AmountOfChildren = 1, Sex = Sex.M },
+				new SampleData2("Stephen", "Tyler", "7452 Terrace \"At the Plaza\" road", "SomeTown", "SD", 91234) { AmountOfChildren = 1, Sex = Sex.M },
+				new SampleData2("", "Blankman", "", "SomeTown", "SD", 298) { AmountOfChildren = 1, Sex = Sex.M },
+				new SampleData2("Joan \"the bone\", Anne", "Jet", "9th, at Terrace plc", "Desert City", "CO", 123) { AmountOfChildren = 1, Sex = Sex.M },
             }, o => o.IncludingAllDeclaredProperties());
 		}
 
@@ -353,10 +422,10 @@ namespace CsvReader.UnitTests
 			using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), true))
 			{
 				IDataReader reader = csv;
-				Assert.AreEqual(0, reader.Depth);
+				Assert.That(reader.Depth, Is.EqualTo(0));
 
 				csv.ReadNextRecord();
-				Assert.AreEqual(0, reader.Depth);
+				Assert.That(reader.Depth, Is.EqualTo(0));
 			}
 		}
 
@@ -380,13 +449,13 @@ namespace CsvReader.UnitTests
 			using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), true))
 			{
 				IDataReader reader = csv;
-				Assert.IsFalse(reader.IsClosed);
+				Assert.That(reader.IsClosed, Is.False);
 
 				csv.ReadNextRecord();
-				Assert.IsFalse(reader.IsClosed);
+				Assert.That(reader.IsClosed, Is.False);
 
 				reader.Close();
-				Assert.IsTrue(reader.IsClosed);
+				Assert.That(reader.IsClosed, Is.True);
 			}
 		}
 
@@ -396,13 +465,13 @@ namespace CsvReader.UnitTests
 			using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), true))
 			{
 				IDataReader reader = csv;
-				Assert.AreEqual(-1, reader.RecordsAffected);
+				Assert.That(reader.RecordsAffected, Is.EqualTo(-1));
 
 				csv.ReadNextRecord();
-				Assert.AreEqual(-1, reader.RecordsAffected);
+				Assert.That(reader.RecordsAffected, Is.EqualTo(-1));
 
 				reader.Close();
-				Assert.AreEqual(-1, reader.RecordsAffected);
+				Assert.That(reader.RecordsAffected, Is.EqualTo(-1));
 			}
 		}
 
@@ -420,7 +489,7 @@ namespace CsvReader.UnitTests
 				Boolean value = true;
 				while (reader.Read())
 				{
-					Assert.AreEqual(value, reader.GetBoolean(reader.GetOrdinal(typeof(Boolean).FullName)));
+					Assert.That(reader.GetBoolean(reader.GetOrdinal(typeof(Boolean).FullName)), Is.EqualTo(value));
 				}
 			}
 		}
@@ -462,7 +531,7 @@ namespace CsvReader.UnitTests
 				Byte value = 1;
 				while (reader.Read())
 				{
-					Assert.AreEqual(value, reader.GetByte(reader.GetOrdinal(typeof(Byte).FullName)));
+					Assert.That(reader.GetByte(reader.GetOrdinal(typeof(Byte).FullName)), Is.EqualTo(value));
 				}
 			}
 		}
@@ -486,11 +555,11 @@ namespace CsvReader.UnitTests
 
 					long count = reader.GetBytes(reader.GetOrdinal(typeof(String).FullName), 0, csvValue, 0, value.Length);
 
-					Assert.AreEqual(value.Length, count);
-					Assert.AreEqual(value.Length, csvValue.Length);
+					Assert.That(count, Is.EqualTo(value.Length));
+					Assert.That(csvValue.Length, Is.EqualTo(value.Length));
 
 					for (int i = 0; i < value.Length; i++)
-						Assert.AreEqual(value[i], csvValue[i]);
+						Assert.That(csvValue[i], Is.EqualTo(value[i]));
 				}
 			}
 		}
@@ -505,7 +574,7 @@ namespace CsvReader.UnitTests
 				Char value = 'a';
 				while (reader.Read())
 				{
-					Assert.AreEqual(value, reader.GetChar(reader.GetOrdinal(typeof(Char).FullName)));
+					Assert.That(reader.GetChar(reader.GetOrdinal(typeof(Char).FullName)), Is.EqualTo(value));
 				}
 			}
 		}
@@ -524,11 +593,11 @@ namespace CsvReader.UnitTests
 
 					long count = reader.GetChars(reader.GetOrdinal(typeof(String).FullName), 0, csvValue, 0, value.Length);
 
-					Assert.AreEqual(value.Length, count);
-					Assert.AreEqual(value.Length, csvValue.Length);
+					Assert.That(count, Is.EqualTo(value.Length));
+					Assert.That(csvValue.Length, Is.EqualTo(value.Length));
 
 					for (int i = 0; i < value.Length; i++)
-						Assert.AreEqual(value[i], csvValue[i]);
+						Assert.That(csvValue[i], Is.EqualTo(value[i]));
 				}
 			}
 		}
@@ -542,10 +611,10 @@ namespace CsvReader.UnitTests
 
 				while (reader.Read())
 				{
-					Assert.AreSame(csv, reader.GetData(0));
+					Assert.That(reader.GetData(0), Is.SameAs(csv));
 
 					for (int i = 1; i < reader.FieldCount; i++)
-						Assert.IsNull(reader.GetData(i));
+						Assert.That(reader.GetData(i), Is.Null);
 				}
 			}
 		}
@@ -560,7 +629,7 @@ namespace CsvReader.UnitTests
 				while (reader.Read())
 				{
 					for (int i = 0; i < reader.FieldCount; i++)
-						Assert.AreEqual(typeof(string).FullName, reader.GetDataTypeName(i));
+						Assert.That(reader.GetDataTypeName(i), Is.EqualTo(typeof(string).FullName));
 				}
 			}
 		}
@@ -575,7 +644,7 @@ namespace CsvReader.UnitTests
 				DateTime value = new DateTime(2001, 1, 1);
 				while (reader.Read())
 				{
-					Assert.AreEqual(value, reader.GetDateTime(reader.GetOrdinal(typeof(DateTime).FullName)));
+					Assert.That(reader.GetDateTime(reader.GetOrdinal(typeof(DateTime).FullName)), Is.EqualTo(value));
 				}
 			}
 		}
@@ -590,7 +659,7 @@ namespace CsvReader.UnitTests
 				Decimal value = 1;
 				while (reader.Read())
 				{
-					Assert.AreEqual(value, reader.GetDecimal(reader.GetOrdinal(typeof(Decimal).FullName)));
+					Assert.That(reader.GetDecimal(reader.GetOrdinal(typeof(decimal).FullName)), Is.EqualTo(value));
 				}
 			}
 		}
@@ -605,7 +674,7 @@ namespace CsvReader.UnitTests
 				Double value = 1;
 				while (reader.Read())
 				{
-					Assert.AreEqual(value, reader.GetDouble(reader.GetOrdinal(typeof(Double).FullName)));
+					Assert.That(reader.GetDouble(reader.GetOrdinal(typeof(double).FullName)), Is.EqualTo(value));
 				}
 			}
 		}
@@ -620,7 +689,7 @@ namespace CsvReader.UnitTests
 				while (reader.Read())
 				{
 					for (int i = 0; i < reader.FieldCount; i++)
-						Assert.AreEqual(typeof(string), reader.GetFieldType(i));
+						Assert.That(reader.GetFieldType(i), Is.EqualTo(typeof(string)));
 				}
 			}
 		}
@@ -635,7 +704,7 @@ namespace CsvReader.UnitTests
 				Single value = 1;
 				while (reader.Read())
 				{
-					Assert.AreEqual(value, reader.GetFloat(reader.GetOrdinal(typeof(Single).FullName)));
+					Assert.That(reader.GetFloat(reader.GetOrdinal(typeof(float).FullName)), Is.EqualTo(value));
 				}
 			}
 		}
@@ -650,7 +719,7 @@ namespace CsvReader.UnitTests
 				Guid value = new Guid("{11111111-1111-1111-1111-111111111111}");
 				while (reader.Read())
 				{
-					Assert.AreEqual(value, reader.GetGuid(reader.GetOrdinal(typeof(Guid).FullName)));
+					Assert.That(reader.GetGuid(reader.GetOrdinal(typeof(Guid).FullName)), Is.EqualTo(value));
 				}
 			}
 		}
@@ -665,7 +734,7 @@ namespace CsvReader.UnitTests
 				Int16 value = 1;
 				while (reader.Read())
 				{
-					Assert.AreEqual(value, reader.GetInt16(reader.GetOrdinal(typeof(Int16).FullName)));
+					Assert.That(reader.GetInt16(reader.GetOrdinal(typeof(short).FullName)), Is.EqualTo(value));
 				}
 			}
 		}
@@ -680,7 +749,7 @@ namespace CsvReader.UnitTests
 				Int32 value = 1;
 				while (reader.Read())
 				{
-					Assert.AreEqual(value, reader.GetInt32(reader.GetOrdinal(typeof(Int32).FullName)));
+					Assert.That(reader.GetInt32(reader.GetOrdinal(typeof(int).FullName)), Is.EqualTo(value));
 				}
 			}
 		}
@@ -695,7 +764,7 @@ namespace CsvReader.UnitTests
 				Int64 value = 1;
 				while (reader.Read())
 				{
-					Assert.AreEqual(value, reader.GetInt64(reader.GetOrdinal(typeof(Int64).FullName)));
+					Assert.That(reader.GetInt64(reader.GetOrdinal(typeof(long).FullName)), Is.EqualTo(value));
 				}
 			}
 		}
@@ -709,12 +778,12 @@ namespace CsvReader.UnitTests
 
 				while (reader.Read())
 				{
-					Assert.AreEqual(CsvReaderSampleData.SampleData1Header0, reader.GetName(0));
-					Assert.AreEqual(CsvReaderSampleData.SampleData1Header1, reader.GetName(1));
-					Assert.AreEqual(CsvReaderSampleData.SampleData1Header2, reader.GetName(2));
-					Assert.AreEqual(CsvReaderSampleData.SampleData1Header3, reader.GetName(3));
-					Assert.AreEqual(CsvReaderSampleData.SampleData1Header4, reader.GetName(4));
-					Assert.AreEqual(CsvReaderSampleData.SampleData1Header5, reader.GetName(5));
+					Assert.That(reader.GetName(0), Is.EqualTo(CsvReaderSampleData.SampleData1Header0));
+					Assert.That(reader.GetName(1), Is.EqualTo(CsvReaderSampleData.SampleData1Header1));
+					Assert.That(reader.GetName(2), Is.EqualTo(CsvReaderSampleData.SampleData1Header2));
+					Assert.That(reader.GetName(3), Is.EqualTo(CsvReaderSampleData.SampleData1Header3));
+					Assert.That(reader.GetName(4), Is.EqualTo(CsvReaderSampleData.SampleData1Header4));
+					Assert.That(reader.GetName(5), Is.EqualTo(CsvReaderSampleData.SampleData1Header5));
 				}
 			}
 		}
@@ -728,12 +797,12 @@ namespace CsvReader.UnitTests
 
 				while (reader.Read())
 				{
-					Assert.AreEqual(0, reader.GetOrdinal(CsvReaderSampleData.SampleData1Header0));
-					Assert.AreEqual(1, reader.GetOrdinal(CsvReaderSampleData.SampleData1Header1));
-					Assert.AreEqual(2, reader.GetOrdinal(CsvReaderSampleData.SampleData1Header2));
-					Assert.AreEqual(3, reader.GetOrdinal(CsvReaderSampleData.SampleData1Header3));
-					Assert.AreEqual(4, reader.GetOrdinal(CsvReaderSampleData.SampleData1Header4));
-					Assert.AreEqual(5, reader.GetOrdinal(CsvReaderSampleData.SampleData1Header5));
+					Assert.That(reader.GetOrdinal(CsvReaderSampleData.SampleData1Header0), Is.EqualTo(0));
+					Assert.That(reader.GetOrdinal(CsvReaderSampleData.SampleData1Header1), Is.EqualTo(1));
+					Assert.That(reader.GetOrdinal(CsvReaderSampleData.SampleData1Header2), Is.EqualTo(2));
+					Assert.That(reader.GetOrdinal(CsvReaderSampleData.SampleData1Header3), Is.EqualTo(3));
+					Assert.That(reader.GetOrdinal(CsvReaderSampleData.SampleData1Header4), Is.EqualTo(4));
+					Assert.That(reader.GetOrdinal(CsvReaderSampleData.SampleData1Header5), Is.EqualTo(5));
 				}
 			}
 		}
@@ -748,7 +817,7 @@ namespace CsvReader.UnitTests
 				String value = "abc";
 				while (reader.Read())
 				{
-					Assert.AreEqual(value, reader.GetString(reader.GetOrdinal(typeof(String).FullName)));
+					Assert.That(reader.GetString(reader.GetOrdinal(typeof(string).FullName)), Is.EqualTo(value));
 				}
 			}
 		}
@@ -769,7 +838,7 @@ namespace CsvReader.UnitTests
 						object value = reader.GetValue(i);
 
 						if (string.IsNullOrEmpty(csv[i]))
-							Assert.AreEqual(DBNull.Value, value);
+							Assert.That(value, Is.EqualTo(DBNull.Value));
 
 						values[i] = value.ToString();
 					}
@@ -791,18 +860,54 @@ namespace CsvReader.UnitTests
 
 				while (reader.Read())
 				{
-					Assert.AreEqual(CsvReaderSampleData.SampleData1FieldCount, reader.GetValues(objValues));
+					Assert.That(reader.GetValues(objValues), Is.EqualTo(CsvReaderSampleData.SampleData1FieldCount));
 
 					for (int i = 0; i < reader.FieldCount; i++)
 					{
 						if (string.IsNullOrEmpty(csv[i]))
-							Assert.AreEqual(DBNull.Value, objValues[i]);
+							Assert.That(objValues[i], Is.EqualTo(DBNull.Value));
 
 						values[i] = objValues[i].ToString();
 					}
 
 					CsvReaderSampleData.CheckSampleData1(csv.HasHeaders, csv.CurrentRecordIndex, values);
 				}
+			}
+		}
+
+		[Test()]
+		public void MapDataToDtoTest()
+		{
+            var expected = new List<SampleData3>
+            {
+                new SampleData3("John", "Doe", "120 jefferson st.", "Riverside", "NJ", 8075, true, null),
+                new SampleData3("Jack", "McGinnis", "220 hobo Av.", "Phila", "PA", 9119, false, null),
+                new SampleData3("John \"Da Man\"", "Repici", "120 Jefferson St.", "Riverside", "NJ", 8075, false, null),
+                new SampleData3("Stephen", "Tyler", "7452 Terrace \"At the Plaza\" road", "SomeTown", "SD", 91234, false, null),
+                new SampleData3(null, "Blankman", null, "SomeTown", "SD", 298, false, null),
+                new SampleData3("Joan \"the bone\", Anne", "Jet", "9th, at Terrace plc", "Desert City", "CO", 123, false, null),
+            };
+            var propertyToColumnMapping = new Dictionary<string, string>
+            {
+                { "FirstName", "First Name" },
+                { "LastName", "Last Name" },
+                { "ZipCode", "Zip Code" }
+            };
+			using (CsvReader csv = new CsvReader(new StringReader(CsvReaderSampleData.SampleData1), true))
+			{
+                csv.Columns = new ColumnCollection
+                {
+                    {"First Name", typeof(string)},
+                    {"Last Name", typeof(string)},
+                    {"Address", typeof(string)},
+                    {"City", typeof(string)},
+                    {"State", typeof(string)},
+                    {"Zip Code", typeof(int)},
+                    {"IsActive", typeof(bool)},
+                };
+                csv.CustomBooleanReplacer = new Dictionary<string, bool> { { "Y", true }, { "N", false } };
+                var result = csv.MapDataToDto<SampleData3>(propertyToColumnMapping).ToList();
+                result.Should().BeEquivalentTo(expected);
 			}
 		}
 
@@ -815,7 +920,7 @@ namespace CsvReader.UnitTests
 
 				while (reader.Read())
 				{
-					Assert.IsTrue(reader.IsDBNull(reader.GetOrdinal(typeof(DBNull).FullName)));
+					Assert.That(reader.IsDBNull(reader.GetOrdinal(typeof(DBNull).FullName)), Is.True);
 				}
 			}
 		}
@@ -831,8 +936,8 @@ namespace CsvReader.UnitTests
 
 				while (reader.Read())
 				{
-					Assert.IsTrue(reader.IsDBNull(reader.GetOrdinal(CsvReaderSampleData.DbNullWithNullValueHeader)));
-					Assert.IsFalse(reader.IsDBNull(reader.GetOrdinal(typeof(DBNull).FullName)));
+					Assert.That(reader.IsDBNull(reader.GetOrdinal(CsvReaderSampleData.DbNullWithNullValueHeader)), Is.True);
+					Assert.That(reader.IsDBNull(reader.GetOrdinal(typeof(DBNull).FullName)), Is.False);
 				}
 			}
 		}
@@ -844,7 +949,7 @@ namespace CsvReader.UnitTests
 			{
 				IDataReader reader = csv;
 
-				Assert.AreEqual(CsvReaderSampleData.SampleData1FieldCount, reader.FieldCount);
+				Assert.That(reader.FieldCount, Is.EqualTo(CsvReaderSampleData.SampleData1FieldCount));
 			}
 		}
 
@@ -919,7 +1024,7 @@ namespace CsvReader.UnitTests
                         {"Address", typeof(string)},
                         {"City", typeof(string)},
                         {"State", typeof(string)},
-                        {"Zip Code", typeof(string)},
+                        {"Zip Code", typeof(int)},
                         {"IsActive", typeof(bool)},
                     };
 
@@ -943,14 +1048,14 @@ namespace CsvReader.UnitTests
                         var address = reader.GetSqlString(reader.GetOrdinal("Address"));
                         var city = reader.GetSqlString(reader.GetOrdinal("City"));
                         var state = reader.GetSqlString(reader.GetOrdinal("State"));
-                        var zipCode = reader.GetSqlString(reader.GetOrdinal("ZipCode"));
+                        var zipCode = reader.GetSqlInt32(reader.GetOrdinal("ZipCode"));
                         var isActive = reader.GetSqlBoolean(reader.GetOrdinal("IsActive"));
                         var sampleData = new SampleData1(firstName.IsNull ? null : firstName.Value,
                             lastName.IsNull ? null : lastName.Value,
                             address.IsNull ? null : address.Value,
                             city.IsNull ? null : city.Value,
                             state.IsNull ? null : state.Value,
-                            zipCode.IsNull ? null : zipCode.Value,
+                            zipCode.IsNull ? (int?)null : zipCode.Value,
                             isActive.IsNull ? (bool?) null : isActive.Value);
 						actual.Add(sampleData);
                     }
@@ -960,12 +1065,12 @@ namespace CsvReader.UnitTests
 			// assert
             actual.Should().BeEquivalentTo(new List<SampleData1>
             {
-                new SampleData1("John", "Doe", "120 jefferson st.", "Riverside", "NJ", "08075", true),
-                new SampleData1("Jack", "McGinnis", "220 hobo Av.", "Phila", "PA", "09119", false),
-                new SampleData1("John \"Da Man\"", "Repici", "120 Jefferson St.", "Riverside", "NJ", "08075", null),
-                new SampleData1("Stephen", "Tyler", "7452 Terrace \"At the Plaza\" road", "SomeTown", "SD", "91234", null),
-                new SampleData1(null, "Blankman", null, "SomeTown", "SD", "00298", null),
-                new SampleData1("Joan \"the bone\", Anne", "Jet", "9th, at Terrace plc", "Desert City", "CO", "00123", null),
+                new SampleData1("John", "Doe", "120 jefferson st.", "Riverside", "NJ", 8075, true),
+                new SampleData1("Jack", "McGinnis", "220 hobo Av.", "Phila", "PA", 9119, false),
+                new SampleData1("John \"Da Man\"", "Repici", "120 Jefferson St.", "Riverside", "NJ", 8075, null),
+                new SampleData1("Stephen", "Tyler", "7452 Terrace \"At the Plaza\" road", "SomeTown", "SD", 91234, null),
+                new SampleData1(null, "Blankman", null, "SomeTown", "SD", 298, null),
+                new SampleData1("Joan \"the bone\", Anne", "Jet", "9th, at Terrace plc", "Desert City", "CO", 123, null),
             }, o => o.IncludingAllDeclaredProperties());
 		}
 
@@ -973,7 +1078,7 @@ namespace CsvReader.UnitTests
 
 		private class SampleData1
         {
-            public SampleData1(string firstName, string lastName, string address, string city, string state, string zipCode, bool? isActive)
+            public SampleData1(string firstName, string lastName, string address, string city, string state, int? zipCode, bool? isActive)
             {
                 FirstName = firstName;
                 LastName = lastName;
@@ -989,13 +1094,13 @@ namespace CsvReader.UnitTests
             public string Address { get; set; }
             public string City { get; set; }
             public string State { get; set; }
-            public string ZipCode { get; set; }
+            public int? ZipCode { get; set; }
             public bool? IsActive { get; set; }
         }
 
         private class SampleData2
         {
-            public SampleData2(string firstName, string lastName, string address, string city, string state, string zipCode)
+            public SampleData2(string firstName, string lastName, string address, string city, string state, int zipCode)
             {
                 FirstName = firstName;
                 LastName = lastName;
@@ -1011,8 +1116,37 @@ namespace CsvReader.UnitTests
             public string Address { get; set; }
             public string City { get; set; }
             public string State { get; set; }
-            public string ZipCode { get; set; }
+            public int ZipCode { get; set; }
 			public Sex Sex { get; set; }
+        }
+
+        public class SampleData3
+        {
+            public SampleData3()
+            {
+
+            }
+
+            public SampleData3(string firstName, string lastName, string address, string city, string state, int zipCode, bool isActive, byte[] data)
+            {
+                FirstName = firstName;
+                LastName = lastName;
+                Address = address;
+                City = city;
+                State = state;
+                ZipCode = zipCode;
+                IsActive = isActive;
+                Data = data;
+            }
+
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public string Address { get; set; }
+            public string City { get; set; }
+            public string State { get; set; }
+            public int ZipCode { get; set; }
+            public bool? IsActive { get; set; }
+			public byte[] Data { get; set; }
         }
 
         private enum Sex

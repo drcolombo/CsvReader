@@ -54,7 +54,7 @@ namespace CsvReader.UnitTests
 			// construct the csv data with template "00,01,02\n10,11,12\n...." and calculate expected error position
 
 			long capacity = recordCount * (fieldCount * 2 + fieldCount - 1) + recordCount;
-			Assert.IsTrue(capacity <= int.MaxValue);
+			Assert.That(capacity, Is.LessThanOrEqualTo(int.MaxValue));
 
 			StringBuilder sb = new StringBuilder((int) capacity);
 			int expectedErrorPosition = 0;
@@ -94,11 +94,11 @@ namespace CsvReader.UnitTests
             {
                 csv.DefaultParseErrorAction = ParseErrorAction.ThrowException;
 				csv.MissingFieldAction = action;
-				Assert.AreEqual(fieldCount, csv.FieldCount);
+				Assert.That(csv.FieldCount, Is.EqualTo(fieldCount));
 
 				while (csv.ReadNextRecord())
 				{
-					Assert.AreEqual(fieldCount, csv.FieldCount);
+					Assert.That(csv.FieldCount, Is.EqualTo(fieldCount));
 
 					// if not sequential, directly test the missing field
 					if (!sequentialAccess)
@@ -123,33 +123,33 @@ namespace CsvReader.UnitTests
 			}
 			catch (MissingFieldCsvException ex)
 			{
-				Assert.AreEqual(badRecordIndex, ex.CurrentRecordIndex, Message, ex.CurrentRecordIndex, ex.CurrentFieldIndex, ex.CurrentPosition, sequentialAccess, action);
-				Assert.IsTrue(fieldIndex >= badFieldIndex, Message, ex.CurrentRecordIndex, ex.CurrentFieldIndex, ex.CurrentPosition, sequentialAccess, action);
-				Assert.AreEqual(expectedErrorPosition, ex.CurrentPosition, Message, ex.CurrentRecordIndex, ex.CurrentFieldIndex, ex.CurrentPosition, sequentialAccess, action);
+                Assert.That(ex.CurrentRecordIndex, Is.EqualTo(badRecordIndex), string.Format(Message, ex.CurrentRecordIndex, ex.CurrentFieldIndex, ex.CurrentPosition, sequentialAccess, action));
+				Assert.That(badFieldIndex, Is.LessThanOrEqualTo(fieldIndex), string.Format(Message, ex.CurrentRecordIndex, ex.CurrentFieldIndex, ex.CurrentPosition, sequentialAccess, action));
+				Assert.That(ex.CurrentPosition, Is.EqualTo(expectedErrorPosition), string.Format(Message, ex.CurrentRecordIndex, ex.CurrentFieldIndex, ex.CurrentPosition, sequentialAccess, action));
 
 				return;
 			}
 
 			if (csv.CurrentRecordIndex != badRecordIndex || fieldIndex < badFieldIndex)
-				Assert.AreEqual(csv.CurrentRecordIndex.ToString() + fieldIndex.ToString(), s, Message, csv.CurrentRecordIndex, fieldIndex, -1, sequentialAccess, action);
+				Assert.That(s, Is.EqualTo(csv.CurrentRecordIndex.ToString() + fieldIndex), string.Format(Message, csv.CurrentRecordIndex, fieldIndex, -1, sequentialAccess, action));
 			else
 			{
 				switch (action)
 				{
 					case MissingFieldAction.ReplaceByEmpty:
-						Assert.AreEqual(string.Empty, s, Message, csv.CurrentRecordIndex, fieldIndex, -1, sequentialAccess, action);
+						Assert.That(s, Is.EqualTo(string.Empty), string.Format(Message, csv.CurrentRecordIndex, fieldIndex, -1, sequentialAccess, action));
 						break;
 
 					case MissingFieldAction.ReplaceByNull:
-						Assert.IsNull(s, Message, csv.CurrentRecordIndex, fieldIndex, -1, sequentialAccess, action);
+						Assert.That(s, Is.Null, string.Format(Message, csv.CurrentRecordIndex, fieldIndex, -1, sequentialAccess, action));
 						break;
 
 					case MissingFieldAction.ParseError:
-						Assert.Fail("Failed to throw ParseError. - " + Message, csv.CurrentRecordIndex, fieldIndex, -1, sequentialAccess, action);
+						Assert.Fail(string.Format("Failed to throw ParseError. - " + Message, csv.CurrentRecordIndex, fieldIndex, -1, sequentialAccess, action));
 						break;
 
 					default:
-						Assert.Fail("'{0}' is not handled by this test.", action);
+						Assert.Fail($"'{action}' is not handled by this test.");
 						break;
 				}
 			}
@@ -520,15 +520,15 @@ namespace CsvReader.UnitTests
 			{
 				csv.DefaultParseErrorAction = ParseErrorAction.AdvanceToNextLine;
 
-				Assert.IsTrue(csv.ReadNextRecord());
+				Assert.That(csv.ReadNextRecord(), Is.True);
 
-				Assert.AreEqual("19324", csv[0]);
-				Assert.AreEqual("FJEDER TIL 2-05-405", csv[1]);
-				Assert.AreEqual("", csv[2]);
-				Assert.AreEqual("14,50", csv[3]);
-				Assert.AreEqual("4027816193241", csv[4]);
+				Assert.That(csv[0], Is.EqualTo("19324"));
+				Assert.That(csv[1], Is.EqualTo("FJEDER TIL 2-05-405"));
+				Assert.That(csv[2], Is.EqualTo(""));
+				Assert.That(csv[3], Is.EqualTo("14,50"));
+				Assert.That(csv[4], Is.EqualTo("4027816193241"));
 
-				Assert.IsFalse(csv.ReadNextRecord());
+				Assert.That(csv.ReadNextRecord(), Is.False);
 			}
 		}
 
@@ -545,19 +545,19 @@ namespace CsvReader.UnitTests
 
 				var record = new string[5];
 
-				Assert.IsTrue(csv.ReadNextRecord());
+				Assert.That(csv.ReadNextRecord(), Is.True);
 				csv.CopyCurrentRecordTo(record);
 				CollectionAssert.AreEqual(new string[] { "a", "b", "c", "d", "e" }, record);
 
-				Assert.IsTrue(csv.ReadNextRecord());
+				Assert.That(csv.ReadNextRecord(), Is.True);
 				csv.CopyCurrentRecordTo(record);
 				CollectionAssert.AreEqual(new string[] { "a", "b", "c", "d", "" }, record);
 
-				Assert.IsTrue(csv.ReadNextRecord());
+				Assert.That(csv.ReadNextRecord(), Is.True);
 				csv.CopyCurrentRecordTo(record);
 				CollectionAssert.AreEqual(new string[] { "a", "b", "", null, null }, record);
 
-				Assert.IsFalse(csv.ReadNextRecord());
+				Assert.That(csv.ReadNextRecord(), Is.False);
 			}
 		}
 	}

@@ -27,6 +27,10 @@ using System.Data.Common;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
+using System.Xml.Linq;
 using CsvReader.Events;
 using CsvReader.Exceptions;
 using CsvReader.Resources;
@@ -839,33 +843,64 @@ namespace CsvReader
                 return string.Empty;
         }
 
-                /// <summary>
+        /// <summary>
         /// Maps DataReader to business entity/dto
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="reader"></param>
         /// <param name="filter"></param>
         /// <returns></returns>
-        public static IEnumerable<T> MapDataToDto<T>(this IDataReader reader, Func<IDataReader, bool> filter = null) where T : new()
+        public IEnumerable<T> MapDataToDto<T>(Func<IDataReader, bool> filter = null) where T : new()
         {
             PropertyInfo[] properties = typeof (T).GetProperties().Where(p => p.CanWrite).ToArray();
-            var schemaTable = reader.GetSchemaTable();
+            var schemaTable = ((IDataReader)this).GetSchemaTable();
             if (schemaTable == null) yield break;
-            int columnNameOrdinal = schemaTable.Columns["ColumnName"].Ordinal; // CsvReader doesn't place the "ColumnName" column at ordinal zero
+            int columnNameOrdinal = schemaTable.Columns["ColumnName"].Ordinal;
             var columnList = (schemaTable.Select()).Select(r => r.ItemArray[columnNameOrdinal].ToString()).ToList();
 
-            while (reader.Read())
+            while (((IDataReader)this).Read())
             {
                 if (filter != null)
                 {
-                    if (!filter(reader))
+                    if (!filter(this))
                     {
                         continue;
                     }
                 }
 
                 var element = Activator.CreateInstance<T>();
-                reader.MapDataToDto(element, properties, columnList);
+                MapDataToDto(element, properties, columnList);
+                yield return element;
+            }
+        }
+
+        /// <summary>
+        /// Maps ШDataReader to business entity/DTO. You should first define <seealso cref="Columns"/> with all column names and data type within your CSV file.
+        /// </summary>
+        /// <typeparam name="T">An entity/DTO type to map to</typeparam>
+        /// <param name="propertyToColumnMapping">A mapping dictionary of property name -> column name</param>
+        /// <param name="filter">Rows that match the filter will be skipped</param>
+        /// <returns></returns>
+        public IEnumerable<T> MapDataToDto<T>(Dictionary<string, string> propertyToColumnMapping, Func<IDataReader, bool> filter = null) where T : new()
+        {
+            PropertyInfo[] properties = typeof (T).GetProperties().Where(p => p.CanWrite).ToArray();
+            var schemaTable = ((IDataReader)this).GetSchemaTable();
+            if (schemaTable == null) yield break;
+            int columnNameOrdinal = schemaTable.Columns["ColumnName"].Ordinal;
+            var columnList = (schemaTable.Select()).Select(r => r.ItemArray[columnNameOrdinal].ToString()).ToList();
+
+            while (((IDataReader)this).Read())
+            {
+                if (filter != null)
+                {
+                    if (!filter(this))
+                    {
+                        continue;
+                    }
+                }
+
+                var element = Activator.CreateInstance<T>();
+                MapDataToDto(element, properties, columnList, propertyToColumnMapping);
                 yield return element;
             }
         }
@@ -873,9 +908,6 @@ namespace CsvReader
         /// <summary>
         ///     Maps first IDataReader entry to entity/dto
         /// </summary>
-        /// <param name="reader">
-        ///     The <see cref="IDataReader"/> to use.
-        /// </param>
         /// <param name="instance">
         ///     The instance to map the data to.
         /// </param>
@@ -885,45 +917,41 @@ namespace CsvReader
         /// <param name="columnList">
         ///     Cached column list of the <see cref="IDataReader"/>.
         /// </param>
-        private static bool MapDataToDto<T>(this IDataReader reader, T instance, PropertyInfo[] properties, IList<string> columnList)
+        private bool MapDataToDto<T>(T instance, PropertyInfo[] properties, IList<string> columnList, Dictionary<string, string> propertyToColumnMapping = null)
         {
             if (properties == null)
             {
-                properties = typeof(T).GetProperties().OrderBy(p =>
-                {
-                    // sadly, we have some property setters which interact with each other to we need to be able to control the order in which they're invoked
-                    DataMemberAttribute dataMemberAttribute = (DataMemberAttribute)p.GetCustomAttributes(typeof(DataMemberAttribute), true).FirstOrDefault();
-                    return dataMemberAttribute == null ? -1 : dataMemberAttribute.Order;
-                }).ToArray();
-            }
-
-            // if cached column list has not been passed. Create from schema table
-            if (columnList == null)
-            {
-                DataTable schemaTable = reader.GetSchemaTable();
-
-                // if not available quit
-                if (schemaTable == null)
-                {
-                    return false;
-                }
-
-                columnList = (schemaTable.Select()).Select(r => r.ItemArray[0].ToString()).ToList();
+                properties = typeof(T).GetProperties();
             }
 
             foreach (var f in properties)
             {
-                var fn = f.Name;
-                // ignore property if it's not in the columnlist or if it doesn't have a setter
-                if (!columnList.Contains(f.Name, StringComparer.InvariantCultureIgnoreCase) || !f.CanWrite)
+                var propertyName = f.Name;
+                // ignore property if it's not in the columnList or if it doesn't have a setter
+                if (!columnList.Contains(propertyName, StringComparer.InvariantCultureIgnoreCase) && (propertyToColumnMapping != null && !propertyToColumnMapping.ContainsKey(propertyName))
+                    || !f.CanWrite)
                 {
                     continue;
                 }
 
-                var columnName = f.Name;
-                var o = reader[columnName];
+                string columnName;
+                if (columnList.Contains(propertyName))
+                {
+                    columnName = propertyName;
+                }
+                else if (propertyToColumnMapping != null && columnList.Contains(propertyToColumnMapping[propertyName]))
+                {
+                    columnName = propertyToColumnMapping[propertyName];
+                }
+                else
+                {
+                    continue;
+                }
 
-                if (o.GetType() != typeof (DBNull))
+                var o = ((IDataReader)this).GetValue(((IDataReader)this).GetOrdinal(columnName));
+
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+                if (o != null && o.GetType() != typeof (DBNull))
                 {
                     if (f.PropertyType.IsEnum)
                     {
@@ -935,99 +963,81 @@ namespace CsvReader
 
                         if (f.PropertyType.GetEnumUnderlyingType() == typeof(int) && o.GetType().UnderlyingSystemType == typeof(string))
                         {
-                            var enumNames = EnumExtensions.GetCustomEnumNames(f.PropertyType);
-                            var enumValue = enumNames.Where(x => string.Equals(x.Value, o.ToString(), StringComparison.InvariantCultureIgnoreCase));
-                            if (enumValue.Any())
+                            var enumNames = Enum.GetValues(f.PropertyType).Cast<object>().ToDictionary(value => value, value => value.ToString());
+                            var enumValue = enumNames.Where(x => string.Equals(x.Value, o.ToString(), StringComparison.InvariantCultureIgnoreCase)).ToList();
+                            if (enumValue.Count > 0)
                             {
-                                f.SetValue(instance, enumValue.First().Key, null);
+                                f.SetValue(instance, enumValue[0].Key, null);
                                 continue;
                             }
                         }
                     }
-                    if (f.PropertyType == typeof(XDocument) && o.GetType() == typeof(string))
-                    {
-                        f.SetValue(instance, XDocument.Parse(o.ToString()));
-                        continue;
-                    }
-
-                    try
-                    {
-                        f.SetValue(instance, ChangeType(o, f.PropertyType), null);
-                    }
-                    catch (Exception ex)
-                    {
-                        // ReSharper disable once PossibleIntendedRethrow
-                        // do not remove that - it's useful for debugging purposes
-                        throw ex;
-                    }
-                    
                 }
+                else
+                {
+                    o = GetDefaultValue(f.PropertyType);
+                }
+                f.SetValue(instance, ChangeType(o, f.PropertyType), null);
             }
 
             return true;
         }
 
-        /// <summary>
-        ///     Maps first IDataReader entry to entity/dto
-        /// </summary>
-        /// <param name="reader">
-        ///     The <see cref="IDataReader"/> to use.
-        /// </param>
-        /// <param name="entityType"></param>
-        /// <param name="instance">
-        ///     The instance to map the data to.
-        /// </param>
-        /// <param name="properties">
-        ///     The cached <see cref="PropertyInfo"/> array of the instance.
-        /// </param>
-        /// <param name="columnList">
-        ///     Cached column list of the <see cref="IDataReader"/>.
-        /// </param>
-        private static bool MapDataToDto(this IDataReader reader, Type entityType, object instance, PropertyInfo[] properties, IList<string> columnList)
+        private object GetDefaultValue(Type type)
         {
-            if (properties == null)
+            if (type.IsValueType)
             {
-                properties = entityType.GetProperties();
+#if NETFRAMEWORK
+                return FormatterServices.GetUninitializedObject(type);
+#elif NETSTANDARD
+                return FormatterServices.GetUninitializedObject(type);
+#else
+                return RuntimeHelpers.GetUninitializedObject(type);
+#endif
             }
 
-            // if cached column list has not been passed. Create from schema table
-            if (columnList == null)
-            {
-                DataTable schemaTable = reader.GetSchemaTable();
+            return null;
+        }
 
-                // if not available quit
-                if (schemaTable == null)
+        private object ChangeType(object value, Type conversion)
+        {
+            var t = conversion;
+
+            if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                if (value == null)
                 {
-                    return false;
+                    return null;
                 }
 
-                columnList = (schemaTable.Select()).Select(r => r.ItemArray[0].ToString()).ToList();
-            }
-
-            foreach (var f in properties)
-            {
-                // ignore property if it's not in the columnlist or if it doesn't have a setter
-                if (!columnList.Contains(f.Name, StringComparer.InvariantCultureIgnoreCase) || !f.CanWrite)
+                if (t.GetGenericArguments()[0].IsEnum)
                 {
-                    continue;
-                }
-
-                var columnName = f.Name;
-                var o = reader[columnName];
-
-                if (o.GetType() != typeof (DBNull))
-                {
-                    if (f.PropertyType.IsEnum && f.PropertyType.GetEnumUnderlyingType() == o.GetType().UnderlyingSystemType)
+                    try
                     {
-                        f.SetValue(instance, o, null);
-                        continue;
+                        return Enum.Parse(t.GetGenericArguments()[0], value.ToString(), true);
                     }
+                    catch (Exception)
+                    {
+                        return null;
+                    }
+                }
 
-                    f.SetValue(instance, ChangeType(o, f.PropertyType), null);
+                t = Nullable.GetUnderlyingType(t);
+            }
+
+            if (t.IsEnum)
+            {
+                try
+                {
+                    return Enum.Parse(t, value.ToString(), true);
+                }
+                catch (Exception)
+                {
+                    return null;
                 }
             }
 
-            return true;
+            return Convert.ChangeType(value, t);
         }
 
         /// <summary>

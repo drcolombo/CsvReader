@@ -54,9 +54,7 @@ namespace WpfApp1
         {
             get
             {
-#if NET472
-                return new DataView(_data);
-#elif NET48
+#if NET48
                 return new DataView(_data);
 #else
                 return _data.AsDataView();

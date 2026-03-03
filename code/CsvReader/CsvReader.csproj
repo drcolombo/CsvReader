@@ -14,10 +14,20 @@
     <RepositoryType>github</RepositoryType>
     <PackageTags>CSV cvs-reader</PackageTags>
     <PackageReleaseNotes>Added an additional CsvReader constructor parameter to specify a custom 'new line' character</PackageReleaseNotes>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <Version>4.5.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="..\SolutionInfo.cs" Link="SolutionInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

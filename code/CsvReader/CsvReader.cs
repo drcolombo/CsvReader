@@ -418,6 +418,13 @@ namespace CsvReader
         }
 
         /// <summary>
+        /// Occurs when HasHeaders is true and a duplicate Column Header Name is encountered.
+        /// Setting the HeaderName property on this column will prevent the library from throwing a duplicate key exception
+        /// </summary>
+        public event EventHandler<DuplicateHeaderEventArgs> DuplicateHeaderEncountered;
+
+
+        /// <summary>
         /// Gets the comment character indicating that a line is commented out.
         /// </summary>
         /// <value>The comment character indicating that a line is commented out.</value>
@@ -1745,10 +1752,24 @@ namespace CsvReader
                                 Type = typeof(string)
                             };
 
+                            int existingIndex;
+                            if (_fieldHeaderIndexes.TryGetValue(headerName, out existingIndex))
+                            {
+                                if (DuplicateHeaderEncountered == null)
+                                    throw new DuplicateHeaderException(headerName, i);
+
+                                DuplicateHeaderEventArgs args = new DuplicateHeaderEventArgs(headerName, i, existingIndex);
+                                DuplicateHeaderEncountered(this, args);
+                                col.Name = args.HeaderName;
+                            }
+
+                            _fieldHeaderIndexes.Add(col.Name, i);
+
                             // Should be correct as we are going in ascending order.
                             Columns.Add(col);
                         }
-                        _fieldHeaderIndexes.Add(headerName, i);
+                        else
+                            _fieldHeaderIndexes.Add(headerName, i);
                     }
 
                     // Proceed to first record
@@ -2360,9 +2381,11 @@ namespace CsvReader
             EnsureInitialize();
             ValidateDataReader(DataReaderValidations.IsNotClosed);
 
-            if (i < 0 || i >= Columns.Count)
+            if (i < 0 || i >= FieldCount)
                 throw new ArgumentOutOfRangeException("i", i,
                     string.Format(CultureInfo.InvariantCulture, ExceptionMessage.FieldIndexOutOfRange, i));
+
+            if (i >= Columns.Count) return null;
 
             return Columns[i].Name;
         }
